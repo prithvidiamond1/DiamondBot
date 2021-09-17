@@ -10,7 +10,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
 
-        String botToken = "ODg4NDI0Mjk1NTczODg0OTc4.YUSfmg.VY0mMvjB_Xoa_7wEyuoQUgip4QA";
+        String botToken = "ODg4NDI0Mjk1NTczODg0OTc4.YUSfmg.1vJqhqQmDhG84k2EFX_OTUjY6uc";
 
         DiscordApi api = new DiscordApiBuilder().setToken(botToken).login().join();
 
