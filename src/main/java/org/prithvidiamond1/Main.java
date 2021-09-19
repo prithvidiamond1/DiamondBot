@@ -47,7 +47,6 @@ public class Main {
                 //event.getChannel().sendMessage(event.getMessageAuthor().getDisplayName()+" is "+(int)(Math.random()*100+1)+"% gay");
             }
         });
-
         api.addSlashCommandCreateListener(event -> {
             SlashCommandInteraction slashCommandInteraction = event.getSlashCommandInteraction();
             if (slashCommandInteraction.getCommandName().equals("ping")){
