@@ -46,6 +46,27 @@ public class Main {
 
                 //event.getChannel().sendMessage(event.getMessageAuthor().getDisplayName()+" is "+(int)(Math.random()*100+1)+"% gay");
             }
+            else if(event.getMessageContent().equals("!simprate"))
+            {
+                int rate=(int)(Math.random()*100+1);
+                String simp;
+                if(rate<20)
+                    simp="https://img.buzzfeed.com/buzzfeed-static/static/2015-11/20/10/campaign_images/webdr12/worlds-leading-anxiety-expert-found-curing-people-2-8748-1448032226-1_dblbig.jpg";
+                else if(20<rate && rate<50)
+                    simp="https://i.ytimg.com/vi/qO_Dk_Z2zRM/maxresdefault.jpg";
+                else if(50<rate && rate<80)
+                    simp="https://i0.wp.com/www.culturesonar.com/wp-content/uploads/2021/06/drew-pisarra-book.jpg";
+                else
+                    simp="https://i1.sndcdn.com/artworks-000655332292-x1ui3u-t500x500.jpg";
+                new MessageBuilder().setEmbed(new EmbedBuilder()
+                        .setAuthor(event.getMessageAuthor()).setTitle("Simp Calculator")
+                        .setDescription(event.getMessageAuthor().getDisplayName()+" is "+rate+"% simp")
+                        .setThumbnail(gayness)
+                        .setColor(new Color(60,220,255)))
+                                .send(event.getChannel());
+
+                //event.getChannel().sendMessage(event.getMessageAuthor().getDisplayName()+" is "+(int)(Math.random()*100+1)+"% gay");
+            }
         });
         api.addSlashCommandCreateListener(event -> {
             SlashCommandInteraction slashCommandInteraction = event.getSlashCommandInteraction();
