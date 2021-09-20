@@ -12,3 +12,7 @@ repositories {
 dependencies {
     implementation 'org.javacord:javacord:3.3.2'
 }
+
+task stage(dependsOn: ['build']){
+    build
+}
