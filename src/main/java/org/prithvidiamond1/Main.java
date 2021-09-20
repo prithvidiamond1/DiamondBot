@@ -2,7 +2,9 @@ package org.prithvidiamond1;
 
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.MessageBuilder;
+import org.javacord.api.entity.message.MessageFlag;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.interaction.SlashCommandInteraction;
@@ -17,7 +19,7 @@ public class Main {
 
         DiscordApi api = new DiscordApiBuilder().setToken(botToken).login().join();
 
-       // SlashCommand pingCommand = SlashCommand.with("ping", "prints \"Henlo there!\"").createGlobal(api).join();
+       // SlashCommand pingCommand = SlashCommand.with("ping", "prints username").createGlobal(api).join();
         //List<SlashCommand> commands = api.getGlobalSlashCommands().join();
         api.addMessageCreateListener(event ->
         {
@@ -48,20 +50,11 @@ public class Main {
             }
             else if(event.getMessageContent().equals("!simprate"))
             {
-                int rate1=(int)(Math.random()*100+1);
-                String simp;
-                if(rate1<20)
-                    simp="https://img.buzzfeed.com/buzzfeed-static/static/2015-11/20/10/campaign_images/webdr12/worlds-leading-anxiety-expert-found-curing-people-2-8748-1448032226-1_dblbig.jpg";
-                else if(20<rate1 && rate1<50)
-                    simp="https://i.ytimg.com/vi/qO_Dk_Z2zRM/maxresdefault.jpg";
-                else if(50<rate1 && rate1<80)
-                    simp="https://i0.wp.com/www.culturesonar.com/wp-content/uploads/2021/06/drew-pisarra-book.jpg";
-                else
-                    simp="https://i1.sndcdn.com/artworks-000655332292-x1ui3u-t500x500.jpg";
+                int rate=(int)(Math.random()*100+1);
                 new MessageBuilder().setEmbed(new EmbedBuilder()
                         .setAuthor(event.getMessageAuthor()).setTitle("Simp Calculator")
-                        .setDescription(event.getMessageAuthor().getDisplayName()+" is "+rate1+"% simp")
-                        .setThumbnail(gayness)
+                        .setDescription(event.getMessageAuthor().getDisplayName()+" is "+rate+"% simp")
+
                         .setColor(new Color(60,220,255)))
                                 .send(event.getChannel());
 
@@ -71,7 +64,7 @@ public class Main {
         api.addSlashCommandCreateListener(event -> {
             SlashCommandInteraction slashCommandInteraction = event.getSlashCommandInteraction();
             if (slashCommandInteraction.getCommandName().equals("ping")){
-                slashCommandInteraction.createImmediateResponder().setContent("Henlo there!").respond();
+                slashCommandInteraction.createImmediateResponder().setContent("Hello World!").setFlags(MessageFlag.EPHEMERAL).respond();
             }
         });
 
