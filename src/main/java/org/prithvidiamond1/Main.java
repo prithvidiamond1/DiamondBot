@@ -2,7 +2,9 @@ package org.prithvidiamond1;
 
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.MessageBuilder;
+import org.javacord.api.entity.message.MessageFlag;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.interaction.SlashCommandInteraction;
@@ -17,7 +19,7 @@ public class Main {
 
         DiscordApi api = new DiscordApiBuilder().setToken(botToken).login().join();
 
-       // SlashCommand pingCommand = SlashCommand.with("ping", "prints \"Henlo there!\"").createGlobal(api).join();
+       // SlashCommand pingCommand = SlashCommand.with("ping", "prints username").createGlobal(api).join();
         //List<SlashCommand> commands = api.getGlobalSlashCommands().join();
         api.addMessageCreateListener(event ->
         {
@@ -46,12 +48,23 @@ public class Main {
 
                 //event.getChannel().sendMessage(event.getMessageAuthor().getDisplayName()+" is "+(int)(Math.random()*100+1)+"% gay");
             }
-        });
+            else if(event.getMessageContent().equals("!simprate"))
+            {
+                int rate=(int)(Math.random()*100+1);
+                new MessageBuilder().setEmbed(new EmbedBuilder()
+                        .setAuthor(event.getMessageAuthor()).setTitle("Simp Calculator")
+                        .setDescription(event.getMessageAuthor().getDisplayName()+" is "+rate+"% simp")
 
+                        .setColor(new Color(60,220,255)))
+                                .send(event.getChannel());
+
+                //event.getChannel().sendMessage(event.getMessageAuthor().getDisplayName()+" is "+(int)(Math.random()*100+1)+"% gay");
+            }
+        });
         api.addSlashCommandCreateListener(event -> {
             SlashCommandInteraction slashCommandInteraction = event.getSlashCommandInteraction();
             if (slashCommandInteraction.getCommandName().equals("ping")){
-                slashCommandInteraction.createImmediateResponder().setContent("Henlo there!").respond();
+                slashCommandInteraction.createImmediateResponder().setContent("Hello World!").setFlags(MessageFlag.EPHEMERAL).respond();
             }
         });
 
