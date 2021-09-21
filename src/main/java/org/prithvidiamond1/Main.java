@@ -4,19 +4,32 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 
 import java.awt.*;
 
+@SpringBootApplication
 public class Main {
+//
+//    @Autowired
+//    private Environment env;
+
+    public static void main(String[] args) {SpringApplication.run(Main.class,args);}
 
     private static final Color botAccentColor = new Color(60,220,255);
 
-    public static void main(String[] args) {
-
-        // BOT_TOKEN = ODg4NDI0Mjk1NTczODg0OTc4.YUSfmg.1vJqhqQmDhG84k2EFX_OTUjY6uc
+    @Bean
+    @ConfigurationProperties(value="discord-api")
+    public DiscordApi discordApi() {
         String botToken = System.getenv().get("BOT_TOKEN");
+//        String botToken = env.getProperty("BOT_TOKEN");
 
-        DiscordApi api = new DiscordApiBuilder().setToken(botToken).login().join();
+        DiscordApi api = new DiscordApiBuilder().setToken(botToken).setAllNonPrivilegedIntents().login().join();
 
         System.out.println("Bot has started!");
 
@@ -24,6 +37,8 @@ public class Main {
         helloUserCommand(api);
         gayrateCommand(api);
         simprateCommand(api);
+
+        return api;
     }
 
     /*
