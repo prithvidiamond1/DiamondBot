@@ -5,7 +5,7 @@
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/2.6.0-SNAPSHOT/e3663c259a7639c9c2e62a060a16ebe8968a32ba/spring-boot-configuration-processor-2.6.0-SNAPSHOT.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/2.6.0-SNAPSHOT/b8a5b2a5f6e5b51053064d8d95567847f89b200/spring-boot-configuration-processor-2.6.0-SNAPSHOT.jar" />
         </processorPath>
         <module name="DiscordBot.main" />
       </profile>
