@@ -8,11 +8,17 @@ import org.javacord.api.entity.message.embed.EmbedBuilder;
 import java.awt.*;
 
 public class Main {
+
+    private static final Color botAccentColor = new Color(60,220,255);
+
     public static void main(String[] args) {
 
-        String botToken = "ODg4NDI0Mjk1NTczODg0OTc4.YUSfmg.1vJqhqQmDhG84k2EFX_OTUjY6uc";
+        // BOT_TOKEN = ODg4NDI0Mjk1NTczODg0OTc4.YUSfmg.1vJqhqQmDhG84k2EFX_OTUjY6uc
+        String botToken = System.getenv().get("BOT_TOKEN");
 
         DiscordApi api = new DiscordApiBuilder().setToken(botToken).login().join();
+
+        System.out.println("Bot has started!");
 
         // Commands
         helloUserCommand(api);
@@ -28,7 +34,11 @@ public class Main {
         api.addMessageCreateListener(event -> {
             if (event.getMessageContent().equals("!ping"))
             {
-                event.getChannel().sendMessage("Hello "+event.getMessageAuthor().getDisplayName()+"!");
+                new MessageBuilder().setEmbed(new EmbedBuilder()
+                            .setTitle("Hello "+event.getMessageAuthor().getDisplayName()+"!")
+                            .setThumbnail(event.getMessageAuthor().getAvatar())
+                            .setColor(botAccentColor))
+                        .send(event.getChannel());
             }
         });
     }
@@ -51,7 +61,7 @@ public class Main {
                                 .setAuthor(event.getMessageAuthor()).setTitle("Gay Calculator")
                                 .setDescription(event.getMessageAuthor().getDisplayName()+" is "+rate+"% gay")
                                 .setThumbnail(gayness)
-                                .setColor(new Color(60,220,255)))
+                                .setColor(botAccentColor))
                         .send(event.getChannel());
             }
         });
@@ -65,8 +75,7 @@ public class Main {
                 new MessageBuilder().setEmbed(new EmbedBuilder()
                                 .setAuthor(event.getMessageAuthor()).setTitle("Simp Calculator")
                                 .setDescription(event.getMessageAuthor().getDisplayName()+" is "+rate+"% simp")
-
-                                .setColor(new Color(60,220,255)))
+                                .setColor(botAccentColor))
                         .send(event.getChannel());
             }
         });
