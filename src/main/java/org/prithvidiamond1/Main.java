@@ -48,6 +48,9 @@ public class Main {
 
         System.out.println("Bot has started!");
 
+        // creating a one time instruction to remove the /bing command
+        ServerHelperFunctions.removeGlobalSlashCommand(api, "bing");
+
         // Commands
         api.addMessageCreateListener(pingEvent);
         api.addMessageCreateListener(gayrateEvent);

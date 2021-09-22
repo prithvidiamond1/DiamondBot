@@ -3,6 +3,10 @@ package org.prithvidiamond1;
 import org.testng.internal.collections.Pair;
 
 public class CommandFunctions {
+    /**
+     * Method to calculate gay rate and to get url for the respective gayness image
+     * @return returns a Pair object containing a String and an Integer: the string contains the url for the gayness image and the integer is the calculated gay rate
+     */
     public static Pair<String, Integer> gayRate(){
         String gayness;
         int rate= randomRate();
@@ -17,6 +21,10 @@ public class CommandFunctions {
         return new Pair<String, Integer>(gayness, rate);
     }
 
+    /**
+     * Method to calculate a random rate between 1 and 100
+     * @return returns a random integer between 1 and 100
+     */
     public static int randomRate(){
         return (int)(Math.random()*100+1);
     }
