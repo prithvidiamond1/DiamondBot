@@ -1,8 +1,8 @@
 # Diamond Bot
-A custom Discord bot
+A custom Discord bot built using [Javacord](https://github.com/Javacord/Javacord) and [Spring](https://spring.io/).
 
 ### Build Instructions
-For deployment on Heroku, certain changes needed to be made to the build system. Once you have the latest version of Diamond Bot's source code from Github pulled to your local machine, follow the below instructions to successfully build Diamond Bot.
+For deployment on [Heroku](https://www.heroku.com/), certain changes needed to be made to the [Gradle](https://gradle.org/) build system. Once you have the latest version of Diamond Bot's source code from Github pulled to your local machine, follow the below instructions to successfully build Diamond Bot.
 
 On IntelliJ IDEA:
 * Save your current configuration and click on 'Edit Configurations...'.
