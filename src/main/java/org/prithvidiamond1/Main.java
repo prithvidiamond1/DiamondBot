@@ -46,7 +46,7 @@ public class Main {
     @ConfigurationProperties(value="discord-api")
     public DiscordApi discordApi() {
 
-        String botToken = System.getenv().get("BOT1_TOKEN");
+        String botToken = System.getenv().get("BOT_TOKEN");
 
         DiscordApi api = new DiscordApiBuilder().setToken(botToken).setAllNonPrivilegedIntents().login().join();
 
