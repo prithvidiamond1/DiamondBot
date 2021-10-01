@@ -13,7 +13,10 @@ import org.prithvidiamond1.SlashCommands.RegisteredSlashCommands.SlashGayrateCom
 import org.prithvidiamond1.SlashCommands.RegisteredSlashCommands.SlashPingCommand;
 import org.prithvidiamond1.SlashCommands.RegisteredSlashCommands.SlashSimprateCommand;
 import org.prithvidiamond1.SlashCommands.SlashCommandHandler;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -21,9 +24,11 @@ import org.springframework.context.annotation.Bean;
 
 import java.awt.*;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @SpringBootApplication
-public class Main {
+public class Main implements InitializingBean {
     @Autowired
     private GuildCommandHandler guildCommandRegistry;
 
@@ -31,6 +36,8 @@ public class Main {
     private SlashCommandHandler slashCommandRegistry;
 
     public static void main(String[] args) {SpringApplication.run(Main.class, args);}
+
+    public static Logger logger = Logger.getAnonymousLogger();
 
     public static Color botAccentColor = new Color(60, 220, 255);
     public static String defaultGuildPrefix = "!";   // would probably require a database to implement separate guild command prefixes
@@ -40,6 +47,14 @@ public class Main {
     @Autowired
     public Main(DiscordServerRepository discordServerRepository){
         Main.discordServerRepository = discordServerRepository;
+    }
+
+    @Value("${spring.data.mongodb.uri}")
+    private String mongoUri;
+
+    @Override
+    public void afterPropertiesSet() throws BeanCreationException {
+        logger.info("Mongo URI: {}"+mongoUri);
     }
 
     @Bean
