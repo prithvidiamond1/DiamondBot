@@ -54,7 +54,8 @@ public class Main implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws BeanCreationException {
-        logger.info("Mongo URI: {}"+mongoUri);
+//        logger.
+        logger.info("############################## Mongo URI: \n"+mongoUri+"\n##############################");
     }
 
     @Bean
