@@ -9,14 +9,13 @@ import org.prithvidiamond1.GuildCommands.GuildCommandHandler;
 import org.prithvidiamond1.GuildCommands.RegisteredGuildCommands.GuildGayrateCommand;
 import org.prithvidiamond1.GuildCommands.RegisteredGuildCommands.GuildPingCommand;
 import org.prithvidiamond1.GuildCommands.RegisteredGuildCommands.GuildSimprateCommand;
+import org.prithvidiamond1.HelperHandlers.ServerJoinHandler;
+import org.prithvidiamond1.HelperHandlers.ServerLeaveHandler;
 import org.prithvidiamond1.SlashCommands.RegisteredSlashCommands.SlashGayrateCommand;
 import org.prithvidiamond1.SlashCommands.RegisteredSlashCommands.SlashPingCommand;
 import org.prithvidiamond1.SlashCommands.RegisteredSlashCommands.SlashSimprateCommand;
 import org.prithvidiamond1.SlashCommands.SlashCommandHandler;
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -24,38 +23,30 @@ import org.springframework.context.annotation.Bean;
 
 import java.awt.*;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @SpringBootApplication
-public class Main implements InitializingBean {
+public class Main{
     @Autowired
     private GuildCommandHandler guildCommandRegistry;
 
     @Autowired
     private SlashCommandHandler slashCommandRegistry;
 
-    public static void main(String[] args) {SpringApplication.run(Main.class, args);}
+    @Autowired
+    private ServerJoinHandler serverJoinHandler;
 
-    public static Logger logger = Logger.getAnonymousLogger();
+    @Autowired
+    private ServerLeaveHandler serverLeaveHandler;
+
+    public static void main(String[] args) {SpringApplication.run(Main.class, args);}
 
     public static Color botAccentColor = new Color(60, 220, 255);
     public static String defaultGuildPrefix = "!";   // would probably require a database to implement separate guild command prefixes
 
-    public static DiscordServerRepository discordServerRepository;
+    public static DiscordServerRepository discordServerRepository = null;
 
-    @Autowired
-    public Main(DiscordServerRepository discordServerRepository){
-        Main.discordServerRepository = discordServerRepository;
-    }
-
-    @Value("${spring.data.mongodb.uri}")
-    private String mongoUri;
-
-    @Override
-    public void afterPropertiesSet() throws BeanCreationException {
-//        logger.
-        logger.info("############################## Mongo URI: \n"+mongoUri+"\n##############################");
+    public Main(DiscordServerRepository discordServerRepo){
+        discordServerRepository = discordServerRepo;
     }
 
     @Bean
@@ -68,12 +59,15 @@ public class Main implements InitializingBean {
 
         System.out.println("Bot has started!");
 
+        // Handling server entries in the database
         if (discordServerRepository.findAll().isEmpty()){
             Collection<Server> servers = api.getServers();
             for (Server server: servers){
                 discordServerRepository.save(new DiscordServer(String.valueOf(server.getId()), defaultGuildPrefix));
             }
         }
+        api.addServerJoinListener(serverJoinHandler);
+        api.addServerLeaveListener(serverLeaveHandler);
 
         // Guild Commands
         guildCommandRegistry.registerCommand("ping", new GuildPingCommand());

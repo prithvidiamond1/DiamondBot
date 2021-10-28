@@ -25,12 +25,12 @@ public class GuildCommandHandler implements MessageCreateListener {
         Optional<Server> server = event.getServer();
         server.ifPresent(value -> {
             Optional<DiscordServer> serverModel = Main.discordServerRepository.findById(String.valueOf(value.getId()));
-            String prefix = serverModel.map(DiscordServer::getGuildPrefix).orElseGet(()-> Main.defaultGuildPrefix);
+            String prefix = serverModel.map(DiscordServer::getGuildPrefix).orElseGet(() -> Main.defaultGuildPrefix);
 
-            if (message.startsWith(prefix)){
+            if (message.startsWith(prefix)) {
                 String prefixStrippedMessage = message.substring(prefix.length());
                 GuildCommandInterface command = commands.get(prefixStrippedMessage.toLowerCase());
-                if (command != null){
+                if (command != null) {
                     command.runCommand(event);
                 }
             }
