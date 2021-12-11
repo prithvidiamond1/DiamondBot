@@ -6,15 +6,11 @@ import org.javacord.api.entity.server.Server;
 import org.prithvidiamond1.DB.Models.DiscordServer;
 import org.prithvidiamond1.DB.Repositories.DiscordServerRepository;
 import org.prithvidiamond1.GuildCommands.GuildCommandHandler;
-import org.prithvidiamond1.GuildCommands.RegisteredGuildCommands.GuildGayrateCommand;
-import org.prithvidiamond1.GuildCommands.RegisteredGuildCommands.GuildPingCommand;
-import org.prithvidiamond1.GuildCommands.RegisteredGuildCommands.GuildSimprateCommand;
+import org.prithvidiamond1.GuildCommands.GuildCommandRunner;
 import org.prithvidiamond1.HelperHandlers.ServerJoinHandler;
 import org.prithvidiamond1.HelperHandlers.ServerLeaveHandler;
-import org.prithvidiamond1.SlashCommands.RegisteredSlashCommands.SlashGayrateCommand;
-import org.prithvidiamond1.SlashCommands.RegisteredSlashCommands.SlashPingCommand;
-import org.prithvidiamond1.SlashCommands.RegisteredSlashCommands.SlashSimprateCommand;
 import org.prithvidiamond1.SlashCommands.SlashCommandHandler;
+import org.prithvidiamond1.SlashCommands.SlashCommandRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,8 +20,11 @@ import org.springframework.context.annotation.Bean;
 import java.awt.*;
 import java.util.Collection;
 
+/**
+ * The main class of the Discord bot
+ */
 @SpringBootApplication
-public class Main{
+public class Main {
     @Autowired
     private GuildCommandHandler guildCommandRegistry;
 
@@ -38,54 +37,67 @@ public class Main{
     @Autowired
     private ServerLeaveHandler serverLeaveHandler;
 
-    public static void main(String[] args) {SpringApplication.run(Main.class, args);}
+    /**
+     * The start point for the Discord bot application
+     * @param args command line arguments
+     */
+    public static void main(String[] args) {
+        SpringApplication.run(Main.class, args);
+    }
 
     public static Color botAccentColor = new Color(60, 220, 255);
     public static String defaultGuildPrefix = "!";   // would probably require a database to implement separate guild command prefixes
+    public static String botIconURL = "https://i.imgur.com/ERxQB6z.png";
 
     public static DiscordServerRepository discordServerRepository = null;
 
-    public Main(DiscordServerRepository discordServerRepo){
+    /**
+     * Constructor for the Main class
+     * @param discordServerRepo the backend MongoDB repository used for storing Discord server preferences
+     */
+    public Main(DiscordServerRepository discordServerRepo) {
         discordServerRepository = discordServerRepo;
     }
 
+    /**
+     * Method that runs the Discord bot instance
+     * @return the Discord API instance used by the bot which is then dependency injected using SpringBoot
+     */
     @Bean
-    @ConfigurationProperties(value="discord-api")
+    @ConfigurationProperties(value = "discord-api")
     public DiscordApi discordApi() {
 
         String botToken = System.getenv().get("BOT_TOKEN");
 
-        DiscordApi api = new DiscordApiBuilder().setToken(botToken).setAllNonPrivilegedIntents().login().join();
+        DiscordApi api = new DiscordApiBuilder()
+                .setToken(botToken)
+                .setAllIntents()
+                .setWaitForServersOnStartup(true)
+                .setWaitForUsersOnStartup(true)
+                .login().join();
 
         System.out.println("Bot has started!");
 
         // Handling server entries in the database
-        if (discordServerRepository.findAll().isEmpty()){
+        if (discordServerRepository.findAll().isEmpty()) {
             Collection<Server> servers = api.getServers();
-            for (Server server: servers){
+            for (Server server : servers) {
                 discordServerRepository.save(new DiscordServer(String.valueOf(server.getId()), defaultGuildPrefix));
             }
         }
+
+        // Server join and leave handlers
         api.addServerJoinListener(serverJoinHandler);
         api.addServerLeaveListener(serverLeaveHandler);
 
         // Guild Commands
-        guildCommandRegistry.registerCommand("ping", new GuildPingCommand());
-        guildCommandRegistry.registerCommand("gayrate", new GuildGayrateCommand());
-        guildCommandRegistry.registerCommand("simprate", new GuildSimprateCommand());
-        api.addMessageCreateListener(guildCommandRegistry);
+        GuildCommandRunner.run(api, guildCommandRegistry);
 
         // Slash Commands
-        slashCommandRegistry.registerCommand("ping",
-                "A command that will make the bot greet you!",
-                new SlashPingCommand()).createGlobal(api).join();
-        slashCommandRegistry.registerCommand("gayrate",
-                "A command that will make the bot rate how gay you are!",
-                new SlashGayrateCommand()).createGlobal(api).join();
-        slashCommandRegistry.registerCommand("simprate",
-                "A command that will make the bot rate how much of a simp you are!",
-                new SlashSimprateCommand()).createGlobal(api).join();
-        api.addSlashCommandCreateListener(slashCommandRegistry);
+        SlashCommandRunner.run(api, slashCommandRegistry);
+
+        // Self mention listener
+        AuxiliaryListeners.selfMentionListener(api);
 
         return api;
     }

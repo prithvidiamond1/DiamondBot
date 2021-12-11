@@ -18,7 +18,7 @@ public class CommandFunctions {
             gayness="https://i0.wp.com/www.culturesonar.com/wp-content/uploads/2021/06/drew-pisarra-book.jpg";
         else
             gayness="https://i1.sndcdn.com/artworks-000655332292-x1ui3u-t500x500.jpg";
-        return new Pair<String, Integer>(gayness, rate);
+        return new Pair<>(gayness, rate);
     }
 
     /**

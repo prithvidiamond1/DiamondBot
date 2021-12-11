@@ -1,0 +1,9 @@
+org.prithvidiamond1
+org.prithvidiamond1.DB.Models
+org.prithvidiamond1.DB.Repositories
+org.prithvidiamond1.GuildCommands
+org.prithvidiamond1.GuildCommands.RegisteredGuildCommands
+org.prithvidiamond1.HelperHandlers
+org.prithvidiamond1.SlashCommands
+org.prithvidiamond1.SlashCommands.Customizers
+org.prithvidiamond1.SlashCommands.RegisteredSlashCommands
