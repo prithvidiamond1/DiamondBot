@@ -35,7 +35,6 @@ public class SlashCommandRunner {
                 "A command to change the guild prefix of the bot",
                 true);
         prefixCommandCustomizer.setCustomizations()
-                .setDefaultPermission(false)
                 .createGlobal(api).join();
 
         slashCommandRegistry.registerCommand("help",

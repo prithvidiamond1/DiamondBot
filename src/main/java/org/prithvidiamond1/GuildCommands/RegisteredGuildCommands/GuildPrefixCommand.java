@@ -37,7 +37,8 @@ public class GuildPrefixCommand implements GuildCommandInterface {
 
         if (!prefixIsValid) {
             new MessageBuilder().setEmbed(
-                            new EmbedBuilder().setTitle("Incorrect syntax for changing prefix!")
+                            new EmbedBuilder()
+                                    .setTitle("Incorrect syntax for changing prefix!")
                                     .setDescription(String.format("Make sure to use the following syntax: %sprefix \"NEW_PREFIX\"", currentPrefix))
                                     .setColor(Main.botAccentColor))
                     .send(event.getChannel());
@@ -46,7 +47,8 @@ public class GuildPrefixCommand implements GuildCommandInterface {
             String newPrefix = unvalidatedNewPrefix.replaceAll("\"", "");
             if (newPrefix.isBlank()) {
                 new MessageBuilder().setEmbed(
-                                new EmbedBuilder().setTitle("Blank text cannot be set as a prefix!")
+                                new EmbedBuilder()
+                                        .setTitle("Blank text cannot be set as a prefix!")
                                         .setDescription("Make sure to set a prefix that is not blank by following the correct syntax")
                                         .setColor(Main.botAccentColor))
                         .send(event.getChannel());
@@ -55,13 +57,15 @@ public class GuildPrefixCommand implements GuildCommandInterface {
                     serverModel.setGuildPrefix(newPrefix);
                     Main.discordServerRepository.save(serverModel);
                     new MessageBuilder().setEmbed(
-                                    new EmbedBuilder().setTitle("Guild Command Prefix Changed!")
+                                    new EmbedBuilder()
+                                            .setTitle("Guild Command Prefix Changed!")
                                             .setDescription(String.format("Guild prefix has been set to **%s**", newPrefix))
                                             .setColor(Main.botAccentColor))
                             .send(event.getChannel());
                 } else {
                     new MessageBuilder().setEmbed(
-                                    new EmbedBuilder().setTitle("You cannot change guild command prefixes for this server!")
+                                    new EmbedBuilder()
+                                            .setTitle("You cannot change guild command prefixes for this server!")
                                             .setDescription("You do not have the required permissions for this action! Contact a server admin and request for a change")
                                             .setColor(Main.botAccentColor))
                             .send(event.getChannel());
