@@ -35,6 +35,11 @@ public class SlashHelpCommand implements SlashCommandInterface {
                         .setDescription(slashCommandRegistry.generateHelpDescription())
                         .setThumbnail(Main.botIconURL)
                         .setColor(Main.botAccentColor)
-                ).respond());
+                ).respond()
+                .exceptionally(exception -> {
+                    exception.printStackTrace();
+                    return null;
+                })
+        );
     }
 }

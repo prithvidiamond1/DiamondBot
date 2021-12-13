@@ -36,7 +36,12 @@ public class GuildHelpCommand implements GuildCommandInterface {
                     .setTitle("List of guild commands and their descriptions")
                     .setDescription(guildCommandRegistry.generateHelpDescription(commandPrefix))
                     .setThumbnail(Main.botIconURL)
-                    .setColor(Main.botAccentColor)).send(event.getChannel());
+                    .setColor(Main.botAccentColor))
+                    .send(event.getChannel())
+                    .exceptionally(exception -> {
+                        exception.printStackTrace();
+                        return null;
+                    });
         });
     }
 

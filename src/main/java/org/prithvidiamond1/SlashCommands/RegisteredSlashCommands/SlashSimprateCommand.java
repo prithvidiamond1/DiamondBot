@@ -31,6 +31,11 @@ public class SlashSimprateCommand implements SlashCommandInterface {
                         .setTitle("Simp Calculator")
                         .setDescription(String.format("%s is **%d%%** simp", user.getDisplayName(server.get()), rate))
                         .setColor(Main.botAccentColor))
-                .respond());
+                .respond()
+                .exceptionally(exception -> {
+                    exception.printStackTrace();
+                    return null;
+                })
+        );
     }
 }

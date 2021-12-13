@@ -23,6 +23,10 @@ public class GuildSimprateCommand implements GuildCommandInterface {
                         .setTitle("Simp Calculator")
                         .setDescription(String.format("%s is **%d%%** simp", event.getMessageAuthor().getDisplayName(), rate))
                         .setColor(Main.botAccentColor))
-                .send(event.getChannel());
+                .send(event.getChannel())
+                .exceptionally(exception -> {
+                    exception.printStackTrace();
+                    return null;
+                });
     }
 }

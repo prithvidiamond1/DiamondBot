@@ -29,7 +29,12 @@ public class AuxiliaryListeners {
                                 .setTitle("Hi! My name is Diamond bot!")
                                 .setThumbnail(Main.botIconURL)
                                 .setDescription(String.format("Type **/help** for a list of slash commands or **%shelp** for a list of guild commands", currentPrefix))
-                                .setColor(Main.botAccentColor)).send(event.getChannel());
+                                .setColor(Main.botAccentColor))
+                                .send(event.getChannel())
+                                .exceptionally(exception -> {
+                                    exception.printStackTrace();
+                                    return null;
+                                });
                     }
                 }
             }

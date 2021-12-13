@@ -18,13 +18,33 @@ public class SlashCommandRunner {
     public static void run(DiscordApi api, SlashCommandHandler slashCommandRegistry){
         slashCommandRegistry.registerCommand("ping",
                 "A command that will make the bot greet you!",
-                new SlashPingCommand()).createGlobal(api).join();
+                new SlashPingCommand())
+                .createGlobal(api)
+                .exceptionally(exception -> {
+                    exception.printStackTrace();
+                    return null;
+                })
+                .join();
+
         slashCommandRegistry.registerCommand("gayrate",
                 "A command that will make the bot rate how gay you are!",
-                new SlashGayrateCommand()).createGlobal(api).join();
+                new SlashGayrateCommand())
+                .createGlobal(api)
+                .exceptionally(exception -> {
+                    exception.printStackTrace();
+                    return null;
+                })
+                .join();
+
         slashCommandRegistry.registerCommand("simprate",
                 "A command that will make the bot rate how much of a simp you are!",
-                new SlashSimprateCommand()).createGlobal(api).join();
+                new SlashSimprateCommand())
+                .createGlobal(api)
+                .exceptionally(exception -> {
+                    exception.printStackTrace();
+                    return null;
+                })
+                .join();
 
         SlashCommandBuilder prefixCommand = slashCommandRegistry.registerCommand("prefix",
                 "A command to change the guild prefix of the bot",
@@ -35,11 +55,22 @@ public class SlashCommandRunner {
                 "A command to change the guild prefix of the bot",
                 true);
         prefixCommandCustomizer.setCustomizations()
-                .createGlobal(api).join();
+                .createGlobal(api)
+                .exceptionally(exception -> {
+                    exception.printStackTrace();
+                    return null;
+                })
+                .join();
 
         slashCommandRegistry.registerCommand("help",
                 "A command that shows all the commands of the bot and their descriptions",
-                new SlashHelpCommand(slashCommandRegistry)).createGlobal(api).join();
+                new SlashHelpCommand(slashCommandRegistry))
+                .createGlobal(api)
+                .exceptionally(exception -> {
+                    exception.printStackTrace();
+                    return null;
+                })
+                .join();
 
         api.addSlashCommandCreateListener(slashCommandRegistry);
     }

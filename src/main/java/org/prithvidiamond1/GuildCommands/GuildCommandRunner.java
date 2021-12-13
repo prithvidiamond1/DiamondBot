@@ -16,15 +16,19 @@ public class GuildCommandRunner {
         guildCommandRegistry.registerCommand("ping",
                 "A command that will make the bot greet you!",
                 new GuildPingCommand());
+
         guildCommandRegistry.registerCommand("gayrate",
                 "A command that will make the bot rate how gay you are!",
                 new GuildGayrateCommand());
+
         guildCommandRegistry.registerCommand("simprate",
                 "A command that will make the bot rate how much of a simp you are!",
                 new GuildSimprateCommand());
+
         guildCommandRegistry.registerCommand("prefix",
                 "A command to change the guild prefix of the bot",
                 new GuildPrefixCommand());
+        
         guildCommandRegistry.registerCommand("help",
                 "A command that shows all the commands of the bot and their descriptions",
                 new GuildHelpCommand(guildCommandRegistry));

@@ -31,13 +31,31 @@ public class ServerHelperFunctions {
      */
     public static void removeGlobalSlashCommand(DiscordApi api, String commandName){
         boolean commandFound = false;
-        List<SlashCommand> slashCommands = api.getGlobalSlashCommands().join();
+        List<SlashCommand> slashCommands = api
+                .getGlobalSlashCommands()
+                .exceptionally(exception -> {
+                    exception.printStackTrace();
+                    return null;
+                })
+                .join();
         for (SlashCommand slashCommand: slashCommands){
             if(slashCommand.getName().equals(commandName)){
                 commandFound = true;
                 long commandId = slashCommand.getId();
-                SlashCommand commandToBeRemoved = api.getGlobalSlashCommandById(commandId).join();
-                commandToBeRemoved.deleteGlobal().join();
+                SlashCommand commandToBeRemoved = api
+                        .getGlobalSlashCommandById(commandId)
+                        .exceptionally(exception -> {
+                            exception.printStackTrace();
+                            return null;
+                        })
+                        .join();
+                commandToBeRemoved
+                        .deleteGlobal()
+                        .exceptionally(exception -> {
+                            exception.printStackTrace();
+                            return null;
+                        })
+                        .join();
                 break;
             }
         }

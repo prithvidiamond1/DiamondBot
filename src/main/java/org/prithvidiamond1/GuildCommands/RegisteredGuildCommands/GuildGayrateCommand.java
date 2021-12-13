@@ -27,6 +27,10 @@ public class GuildGayrateCommand implements GuildCommandInterface {
                         .setDescription(String.format("%s is **%d%%** gay", event.getMessageAuthor().getDisplayName(), rate))
                         .setThumbnail(gayness)
                         .setColor(Main.botAccentColor))
-                .send(event.getChannel());
+                .send(event.getChannel())
+                .exceptionally(exception -> {
+                    exception.printStackTrace();
+                    return null;
+                });
     }
 }

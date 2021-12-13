@@ -35,6 +35,11 @@ public class SlashGayrateCommand implements SlashCommandInterface {
                         .setDescription(String.format("%s is **%d%%** gay", user.getDisplayName(server.get()), rate))
                         .setThumbnail(gayness)
                         .setColor(Main.botAccentColor))
-                .respond());
+                .respond()
+                .exceptionally(exception -> {
+                    exception.printStackTrace();
+                    return null;
+                })
+        );
     }
 }

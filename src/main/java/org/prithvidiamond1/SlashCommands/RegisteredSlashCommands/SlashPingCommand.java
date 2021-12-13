@@ -26,6 +26,11 @@ public class SlashPingCommand implements SlashCommandInterface {
                         .setTitle(String.format("Hello %s!", slashCommandInteraction.getUser().getDisplayName(server.get())))
                         .setThumbnail(slashCommandInteraction.getUser().getAvatar())
                         .setColor(Main.botAccentColor))
-                .respond());
+                .respond()
+                .exceptionally(exception -> {
+                    exception.printStackTrace();
+                    return null;
+                })
+        );
     }
 }

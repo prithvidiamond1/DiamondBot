@@ -20,6 +20,10 @@ public class GuildPingCommand implements GuildCommandInterface {
                         .setTitle(String.format("Hello %s!", event.getMessageAuthor().getDisplayName()))
                         .setThumbnail(event.getMessageAuthor().getAvatar())
                         .setColor(Main.botAccentColor))
-                .send(event.getChannel());
+                .send(event.getChannel())
+                .exceptionally(exception -> {
+                    exception.printStackTrace();
+                    return null;
+                });
     }
 }

@@ -74,7 +74,11 @@ public class Main {
                 .setAllIntents()
                 .setWaitForServersOnStartup(true)
                 .setWaitForUsersOnStartup(true)
-                .login().join();
+                .login().exceptionally(exception -> {
+                    exception.printStackTrace();    // Error message for any failed actions from the above
+                    return null;
+                })
+                .join();
 
         System.out.println("Bot has started!");
 
