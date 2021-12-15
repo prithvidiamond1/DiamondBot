@@ -42,8 +42,10 @@ public class GuildPrefixCommand implements GuildCommandInterface {
                                     .setDescription(String.format("Make sure to use the following syntax: %sprefix \"NEW_PREFIX\"", currentPrefix))
                                     .setColor(Main.botAccentColor))
                     .send(event.getChannel())
-                    .exceptionally(exception -> {
-                        exception.printStackTrace();
+                    .exceptionally(exception -> {   // Error message for failing to respond to the guild command
+                        Main.logger.error("Unable to respond to the guild command!");
+                        Main.logger.error(exception.getMessage());
+//                        exception.printStackTrace();
                         return null;
                     });
         }
@@ -56,8 +58,10 @@ public class GuildPrefixCommand implements GuildCommandInterface {
                                         .setDescription("Make sure to set a prefix that is not blank by following the correct syntax")
                                         .setColor(Main.botAccentColor))
                         .send(event.getChannel())
-                        .exceptionally(exception -> {
-                            exception.printStackTrace();
+                        .exceptionally(exception -> {   // Error message for failing to respond to the guild command
+                            Main.logger.error("Unable to respond to the guild command!");
+                            Main.logger.error(exception.getMessage());
+//                            exception.printStackTrace();
                             return null;
                         });
             } else {
@@ -70,8 +74,10 @@ public class GuildPrefixCommand implements GuildCommandInterface {
                                             .setDescription(String.format("Guild prefix has been set to **%s**", newPrefix))
                                             .setColor(Main.botAccentColor))
                             .send(event.getChannel())
-                            .exceptionally(exception -> {
-                                exception.printStackTrace();
+                            .exceptionally(exception -> {   // Error message for failing to respond to the guild command
+                                Main.logger.error("Unable to respond to the guild command!");
+                                Main.logger.error(exception.getMessage());
+//                                exception.printStackTrace();
                                 return null;
                             });
                 } else {
@@ -81,8 +87,10 @@ public class GuildPrefixCommand implements GuildCommandInterface {
                                             .setDescription("You do not have the required permissions for this action! Contact a server admin and request for a change")
                                             .setColor(Main.botAccentColor))
                             .send(event.getChannel())
-                            .exceptionally(exception -> {
-                                exception.printStackTrace();
+                            .exceptionally(exception -> { // Error message for failing to respond to the guild command
+                                Main.logger.error("Unable to respond to the guild command!");
+                                Main.logger.error(exception.getMessage());
+//                                exception.printStackTrace();
                                 return null;
                             });
                 }

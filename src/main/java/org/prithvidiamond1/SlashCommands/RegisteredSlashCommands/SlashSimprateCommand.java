@@ -32,7 +32,7 @@ public class SlashSimprateCommand implements SlashCommandInterface {
                         .setDescription(String.format("%s is **%d%%** simp", user.getDisplayName(server.get()), rate))
                         .setColor(Main.botAccentColor))
                 .respond()
-                .exceptionally(exception -> {
+                .exceptionally(exception -> {   // Error message for failing to respond to the slash command
                     exception.printStackTrace();
                     return null;
                 })

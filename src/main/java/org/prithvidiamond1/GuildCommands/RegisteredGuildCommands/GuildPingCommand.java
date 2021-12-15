@@ -21,8 +21,10 @@ public class GuildPingCommand implements GuildCommandInterface {
                         .setThumbnail(event.getMessageAuthor().getAvatar())
                         .setColor(Main.botAccentColor))
                 .send(event.getChannel())
-                .exceptionally(exception -> {
-                    exception.printStackTrace();
+                .exceptionally(exception -> {   // Error message for failing to respond to the guild command
+                    Main.logger.error("Unable to respond to the guild command!");
+                    Main.logger.error(exception.getMessage());
+//                    exception.printStackTrace();
                     return null;
                 });
     }

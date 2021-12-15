@@ -22,6 +22,7 @@ public class ServerLeaveHandler implements ServerLeaveListener {
     @Override
     public void onServerLeave(ServerLeaveEvent event) {
         Server leftServer = event.getServer();
+        Main.logger.info(String.format("Bot has left the following server: %s", leftServer.getName()));
         Main.discordServerRepository.delete(resolveServerModelById(leftServer));
     }
 }

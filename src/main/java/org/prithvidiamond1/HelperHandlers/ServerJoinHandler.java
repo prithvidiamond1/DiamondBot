@@ -21,6 +21,7 @@ public class ServerJoinHandler implements ServerJoinListener {
     @Override
     public void onServerJoin(ServerJoinEvent event) {
         Server joinedServer = event.getServer();
+        Main.logger.info(String.format("Bot has joined the following server: %s", joinedServer.getName()));
         Main.discordServerRepository.save(new DiscordServer(String.valueOf(joinedServer.getId()), Main.defaultGuildPrefix));
     }
 }

@@ -5,6 +5,7 @@ import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.listener.interaction.SlashCommandCreateListener;
+import org.prithvidiamond1.Main;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -40,8 +41,10 @@ public class SlashCommandHandler implements SlashCommandCreateListener {
     @Override
     public void onSlashCommandCreate(SlashCommandCreateEvent event){
         SlashCommandInteraction slashCommandInteraction = event.getSlashCommandInteraction();
-        SlashCommandInterface command = commands.get(slashCommandInteraction.getCommandName().toLowerCase());
+        String commandName = slashCommandInteraction.getCommandName();
+        SlashCommandInterface command = commands.get(commandName.toLowerCase());
         if (command != null){
+            Main.logger.info(String.format("Received slash command - '%s'", commandName.toLowerCase()));
             command.runCommand(event);
         }
     }

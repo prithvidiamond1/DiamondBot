@@ -30,11 +30,14 @@ public class ServerHelperFunctions {
      * @param commandName String of the command to be deleted
      */
     public static void removeGlobalSlashCommand(DiscordApi api, String commandName){
+        Main.logger.info(String.format("Request to remove a global slash command by the name '%s' received", commandName));
         boolean commandFound = false;
         List<SlashCommand> slashCommands = api
                 .getGlobalSlashCommands()
-                .exceptionally(exception -> {
-                    exception.printStackTrace();
+                .exceptionally(exception -> {   // Error message for failing to get the list of global slash commands
+                    Main.logger.error("Unable to retrieve list of global slash commands!");
+                    Main.logger.error(exception.getMessage());
+//                    exception.printStackTrace();
                     return null;
                 })
                 .join();
@@ -44,15 +47,19 @@ public class ServerHelperFunctions {
                 long commandId = slashCommand.getId();
                 SlashCommand commandToBeRemoved = api
                         .getGlobalSlashCommandById(commandId)
-                        .exceptionally(exception -> {
-                            exception.printStackTrace();
+                        .exceptionally(exception -> {   // Error message for failing to get global slash command by command id
+                            Main.logger.error("Unable to retrieve global slash command by id!");
+                            Main.logger.error(exception.getMessage());
+//                            exception.printStackTrace();
                             return null;
                         })
                         .join();
                 commandToBeRemoved
                         .deleteGlobal()
-                        .exceptionally(exception -> {
-                            exception.printStackTrace();
+                        .exceptionally(exception -> {   // Error message for failing to delete command that needed to be removed
+                            Main.logger.error("Unable to delete the requested global slash command!");
+                            Main.logger.error(exception.getMessage());
+//                            exception.printStackTrace();
                             return null;
                         })
                         .join();
@@ -60,10 +67,10 @@ public class ServerHelperFunctions {
             }
         }
         if (commandFound){
-            System.out.println("The requested command was successfully found and deleted");
+            Main.logger.info("The requested command was successfully found and deleted");
         }
         else{
-            System.out.println("The request command was NOT found");
+            Main.logger.info("The requested command was NOT found");
         }
     }
 }

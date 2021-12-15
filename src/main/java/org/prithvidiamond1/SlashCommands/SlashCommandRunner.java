@@ -3,6 +3,7 @@ package org.prithvidiamond1.SlashCommands;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandOptionType;
+import org.prithvidiamond1.Main;
 import org.prithvidiamond1.SlashCommands.Customizers.SlashCommandCustomizer;
 import org.prithvidiamond1.SlashCommands.RegisteredSlashCommands.*;
 
@@ -20,8 +21,10 @@ public class SlashCommandRunner {
                 "A command that will make the bot greet you!",
                 new SlashPingCommand())
                 .createGlobal(api)
-                .exceptionally(exception -> {
-                    exception.printStackTrace();
+                .exceptionally(exception -> {   // Error message for failing to register the slash command to the registry
+                    Main.logger.error("Unable to register slash command to the registry");
+                    Main.logger.error(exception.getMessage());
+//                    exception.printStackTrace();
                     return null;
                 })
                 .join();
@@ -30,8 +33,10 @@ public class SlashCommandRunner {
                 "A command that will make the bot rate how gay you are!",
                 new SlashGayrateCommand())
                 .createGlobal(api)
-                .exceptionally(exception -> {
-                    exception.printStackTrace();
+                .exceptionally(exception -> {   // Error message for failing to register the slash command to the registry
+                    Main.logger.error("Unable to register slash command to the registry");
+                    Main.logger.error(exception.getMessage());
+//                    exception.printStackTrace();
                     return null;
                 })
                 .join();
@@ -40,8 +45,10 @@ public class SlashCommandRunner {
                 "A command that will make the bot rate how much of a simp you are!",
                 new SlashSimprateCommand())
                 .createGlobal(api)
-                .exceptionally(exception -> {
-                    exception.printStackTrace();
+                .exceptionally(exception -> {   // Error message for failing to register the slash command to the registry
+                    Main.logger.error("Unable to register slash command to the registry");
+                    Main.logger.error(exception.getMessage());
+//                    exception.printStackTrace();
                     return null;
                 })
                 .join();
@@ -56,8 +63,10 @@ public class SlashCommandRunner {
                 true);
         prefixCommandCustomizer.setCustomizations()
                 .createGlobal(api)
-                .exceptionally(exception -> {
-                    exception.printStackTrace();
+                .exceptionally(exception -> {   // Error message for failing to register the customized slash command to the registry
+                    Main.logger.error("Unable to register customized slash command to the registry");
+                    Main.logger.error(exception.getMessage());
+//                    exception.printStackTrace();
                     return null;
                 })
                 .join();
@@ -66,8 +75,10 @@ public class SlashCommandRunner {
                 "A command that shows all the commands of the bot and their descriptions",
                 new SlashHelpCommand(slashCommandRegistry))
                 .createGlobal(api)
-                .exceptionally(exception -> {
-                    exception.printStackTrace();
+                .exceptionally(exception -> {   // Error message for failing to register the slash command to the registry
+                    Main.logger.error("Unable to register slash command to the registry");
+                    Main.logger.error(exception.getMessage());
+//                    exception.printStackTrace();
                     return null;
                 })
                 .join();

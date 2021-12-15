@@ -34,8 +34,10 @@ public class SlashPrefixCommand implements SlashCommandInterface {
                                             .setTitle("Guild Command Prefix Changed!")
                                             .setDescription(String.format("Guild prefix has been set to **%s**", newPrefix))
                                             .setColor(Main.botAccentColor)).respond()
-                            .exceptionally(exception -> {
-                                exception.printStackTrace();
+                            .exceptionally(exception -> {   // Error message for failing to respond to the slash command interaction
+                                Main.logger.error("Unable to respond to the slash command interaction");
+                                Main.logger.error(exception.getMessage());
+//                                exception.printStackTrace();
                                 return null;
                             });
                 });
@@ -45,10 +47,12 @@ public class SlashPrefixCommand implements SlashCommandInterface {
                                 .setTitle("You cannot change guild command prefixes for this server!")
                                 .setDescription("You do not have the required permissions for this action! Contact a server admin and request for a change")
                                 .setColor(Main.botAccentColor)).respond()
-                        .exceptionally(exception -> {
-                                    exception.printStackTrace();
-                                    return null;
-                                });
+                        .exceptionally(exception -> {   // Error message for failing to respond to the slash command interaction
+                            Main.logger.error("Unable to respond to the slash command interaction");
+                            Main.logger.error(exception.getMessage());
+//                            exception.printStackTrace();
+                            return null;
+                        });
             }
         });
     }

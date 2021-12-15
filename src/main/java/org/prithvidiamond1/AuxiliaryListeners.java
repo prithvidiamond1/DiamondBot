@@ -25,14 +25,17 @@ public class AuxiliaryListeners {
             if (event.getMessage().getContent().strip().length() == String.valueOf(api.getYourself().getId()).length()+4) {
                 if (mentionedUsers.size() == 1) {
                     if (mentionedUsers.get(0).isBot() && mentionedUsers.get(0).isYourself()) {
+                        Main.logger.info("Bot mention (standalone) - Request for greeting received");
                         new MessageBuilder().setEmbed(new EmbedBuilder()
                                 .setTitle("Hi! My name is Diamond bot!")
                                 .setThumbnail(Main.botIconURL)
                                 .setDescription(String.format("Type **/help** for a list of slash commands or **%shelp** for a list of guild commands", currentPrefix))
                                 .setColor(Main.botAccentColor))
                                 .send(event.getChannel())
-                                .exceptionally(exception -> {
-                                    exception.printStackTrace();
+                                .exceptionally(exception -> {   // Error message for failing to respond to the self-mention
+                                    Main.logger.error("Failed to send greeting!");
+                                    Main.logger.error(exception.getMessage());
+//                                    exception.printStackTrace();
                                     return null;
                                 });
                     }

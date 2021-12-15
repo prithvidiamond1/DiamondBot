@@ -36,8 +36,10 @@ public class SlashHelpCommand implements SlashCommandInterface {
                         .setThumbnail(Main.botIconURL)
                         .setColor(Main.botAccentColor)
                 ).respond()
-                .exceptionally(exception -> {
-                    exception.printStackTrace();
+                .exceptionally(exception -> {   // Error message for failing to respond to the slash command interaction
+                    Main.logger.error("Unable to respond to the slash command interaction");
+                    Main.logger.error(exception.getMessage());
+//                    exception.printStackTrace();
                     return null;
                 })
         );

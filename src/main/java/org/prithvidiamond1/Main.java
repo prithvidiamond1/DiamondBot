@@ -11,6 +11,8 @@ import org.prithvidiamond1.HelperHandlers.ServerJoinHandler;
 import org.prithvidiamond1.HelperHandlers.ServerLeaveHandler;
 import org.prithvidiamond1.SlashCommands.SlashCommandHandler;
 import org.prithvidiamond1.SlashCommands.SlashCommandRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,6 +27,14 @@ import java.util.Collection;
  */
 @SpringBootApplication
 public class Main {
+    public static Color botAccentColor = new Color(60, 220, 255);
+    public static String defaultGuildPrefix = "!";   // would probably require a database to implement separate guild command prefixes
+    public static String botIconURL = "https://i.imgur.com/ERxQB6z.png";
+
+    public static Logger logger = LoggerFactory.getLogger(Main.class);
+
+    public static DiscordServerRepository discordServerRepository = null;
+
     @Autowired
     private GuildCommandHandler guildCommandRegistry;
 
@@ -36,20 +46,6 @@ public class Main {
 
     @Autowired
     private ServerLeaveHandler serverLeaveHandler;
-
-    /**
-     * The start point for the Discord bot application
-     * @param args command line arguments
-     */
-    public static void main(String[] args) {
-        SpringApplication.run(Main.class, args);
-    }
-
-    public static Color botAccentColor = new Color(60, 220, 255);
-    public static String defaultGuildPrefix = "!";   // would probably require a database to implement separate guild command prefixes
-    public static String botIconURL = "https://i.imgur.com/ERxQB6z.png";
-
-    public static DiscordServerRepository discordServerRepository = null;
 
     /**
      * Constructor for the Main class
@@ -74,13 +70,13 @@ public class Main {
                 .setAllIntents()
                 .setWaitForServersOnStartup(true)
                 .setWaitForUsersOnStartup(true)
-                .login().exceptionally(exception -> {
-                    exception.printStackTrace();    // Error message for any failed actions from the above
+                .login().exceptionally(exception -> {    // Error message for any failed actions from the above
+                    exception.printStackTrace();
                     return null;
                 })
                 .join();
 
-        System.out.println("Bot has started!");
+        logger.info("Bot has started!");
 
         // Handling server entries in the database
         if (discordServerRepository.findAll().isEmpty()) {
@@ -104,5 +100,13 @@ public class Main {
         AuxiliaryListeners.selfMentionListener(api);
 
         return api;
+    }
+
+    /**
+     * The start point for the Discord bot application
+     * @param args command line arguments
+     */
+    public static void main(String[] args) {
+        SpringApplication.run(Main.class, args);
     }
 }

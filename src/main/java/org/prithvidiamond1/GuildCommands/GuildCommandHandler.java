@@ -3,6 +3,7 @@ package org.prithvidiamond1.GuildCommands;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
+import org.prithvidiamond1.Main;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -45,6 +46,7 @@ public class GuildCommandHandler implements MessageCreateListener {
                 String firstWord = prefixStrippedMessage.split(" ")[0];
                 GuildCommandInterface command = commands.get(firstWord.toLowerCase());
                 if (command != null) {
+                    Main.logger.info(String.format("Received guild command - '%s'", firstWord.toLowerCase()));
                     command.runCommand(event);
                 }
             }

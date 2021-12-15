@@ -24,8 +24,10 @@ public class GuildSimprateCommand implements GuildCommandInterface {
                         .setDescription(String.format("%s is **%d%%** simp", event.getMessageAuthor().getDisplayName(), rate))
                         .setColor(Main.botAccentColor))
                 .send(event.getChannel())
-                .exceptionally(exception -> {
-                    exception.printStackTrace();
+                .exceptionally(exception -> {   // Error message for failing to respond to the guild command
+                    Main.logger.error("Unable to respond to the guild command!");
+                    Main.logger.error(exception.getMessage());
+//                    exception.printStackTrace();
                     return null;
                 });
     }

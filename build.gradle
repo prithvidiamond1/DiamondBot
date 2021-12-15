@@ -25,6 +25,7 @@ dependencies {
     implementation 'org.testng:testng:7.4.0'
     implementation 'org.javacord:javacord:3.3.2'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.16.0'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
