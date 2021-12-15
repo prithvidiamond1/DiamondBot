@@ -3,7 +3,7 @@ package org.prithvidiamond1.SlashCommands.Customizers;
 import org.javacord.api.interaction.SlashCommandBuilder;
 
 /**
- * This class contains methods to customize slash commands by implementing SlashCommandCustomizerInterface
+ * This class contains methods to customize slash commands by implementing {@link SlashCommandCustomizerInterface}
  */
 public class SlashCommandCustomizer implements SlashCommandCustomizerInterface {
     private final SlashCommandBuilder command;

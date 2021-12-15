@@ -1,6 +1,6 @@
 
 plugins {
-    id 'org.springframework.boot' version '2.6.0-SNAPSHOT'
+    id 'org.springframework.boot' version '2.6.1'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
@@ -16,19 +16,17 @@ configurations {
 
 repositories {
     mavenCentral()
-    maven { url 'https://repo.spring.io/milestone' }
-    maven { url 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
     implementation 'junit:junit:4.13.2'
     implementation 'org.testng:testng:7.4.0'
     implementation 'org.javacord:javacord:3.3.2'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb:2.6.1'
     implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.16.0'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools:2.6.1'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:2.6.1'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.6.1'
 }
 
 test {

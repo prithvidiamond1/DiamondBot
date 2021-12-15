@@ -8,8 +8,11 @@ import org.prithvidiamond1.DB.Models.DiscordServer;
 import java.util.List;
 import java.util.Optional;
 
-public class ServerHelperFunctions {
 
+/**
+ * This class holds all the server related bot helper functions
+ */
+public class ServerHelperFunctions {
     /**
      * Method that resolves a Javacord Server entity into its corresponding database model
      * @param server the Javacord Server entity object

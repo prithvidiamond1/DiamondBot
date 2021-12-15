@@ -2,6 +2,9 @@ package org.prithvidiamond1;
 
 import org.testng.internal.collections.Pair;
 
+/**
+ * This class holds all the secondary functions required for the bot commands
+ */
 public class CommandFunctions {
     /**
      * Method to calculate gay rate and to get url for the respective gayness image

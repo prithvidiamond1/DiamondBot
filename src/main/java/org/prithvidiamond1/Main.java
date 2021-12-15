@@ -27,12 +27,29 @@ import java.util.Collection;
  */
 @SpringBootApplication
 public class Main {
+    /**
+     * The bot's accent color (currently a shade of cyan)
+     */
     public static Color botAccentColor = new Color(60, 220, 255);
-    public static String defaultGuildPrefix = "!";   // would probably require a database to implement separate guild command prefixes
+
+    /**
+     * The default guild prefix for bot guild commands
+     */
+    public static String defaultGuildPrefix = "!";
+
+    /**
+     * String containing a URL to the bot's icon image
+     */
     public static String botIconURL = "https://i.imgur.com/ERxQB6z.png";
 
+    /**
+     * The main logger object
+     */
     public static Logger logger = LoggerFactory.getLogger(Main.class);
 
+    /**
+     * The backend repository object for storing server preferences
+     */
     public static DiscordServerRepository discordServerRepository = null;
 
     @Autowired

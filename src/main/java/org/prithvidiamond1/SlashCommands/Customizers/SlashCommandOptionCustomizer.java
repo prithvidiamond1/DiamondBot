@@ -11,6 +11,9 @@ import java.util.List;
  * Interface that allows for the customization of slash commands using options
  */
 public interface SlashCommandOptionCustomizer {
+    /**
+     * List to contain all the slash command option customizations for a slash command
+     */
     List<SlashCommandOption> optionList = new ArrayList<>();
 
     /**

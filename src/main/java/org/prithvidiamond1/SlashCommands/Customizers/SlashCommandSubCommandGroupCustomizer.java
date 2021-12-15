@@ -9,9 +9,12 @@ import java.util.List;
 /**
  * Interface that allows for the customization of slash commands using sub command groups
  * <br>
- * Inherits SlashCommandSubCommandCustomizer
+ * Inherits {@link SlashCommandSubCommandCustomizer}
  */
 interface SlashCommandSubCommandGroupCustomizer extends SlashCommandSubCommandCustomizer {
+    /**
+     * List to contain all the slash command sub command group customizations for a slash command
+     */
     List<SlashCommandOption> subCommandGroupList = new ArrayList<>();
 
     /**
