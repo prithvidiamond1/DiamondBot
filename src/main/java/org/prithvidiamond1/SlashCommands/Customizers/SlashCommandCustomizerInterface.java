@@ -5,5 +5,5 @@ package org.prithvidiamond1.SlashCommands.Customizers;
  * <br>
  * Inherits {@link SlashCommandSubCommandGroupCustomizer}
  */
-public interface SlashCommandCustomizerInterface extends SlashCommandSubCommandGroupCustomizer {
+public abstract class SlashCommandCustomizerInterface extends SlashCommandSubCommandGroupCustomizer {
 }

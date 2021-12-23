@@ -30,7 +30,6 @@ public class SlashPingCommand implements SlashCommandInterface {
                 .exceptionally(exception -> {   // Error message for failing to respond to the slash command interaction
                     Main.logger.error("Unable to respond to the slash command interaction");
                     Main.logger.error(exception.getMessage());
-//                    exception.printStackTrace();
                     return null;
                 })
         );

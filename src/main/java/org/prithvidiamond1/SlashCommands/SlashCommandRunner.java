@@ -2,21 +2,25 @@ package org.prithvidiamond1.SlashCommands;
 
 import org.javacord.api.DiscordApi;
 import org.javacord.api.interaction.SlashCommandBuilder;
+import org.javacord.api.interaction.SlashCommandOptionChoice;
 import org.javacord.api.interaction.SlashCommandOptionType;
 import org.prithvidiamond1.Main;
 import org.prithvidiamond1.SlashCommands.Customizers.SlashCommandCustomizer;
 import org.prithvidiamond1.SlashCommands.RegisteredSlashCommands.*;
 
+import java.util.List;
+
 /**
  * This class holds all the command registrations and runs them as required
  */
 public class SlashCommandRunner {
+    public SlashPlayCommand slashPlayCommand = new SlashPlayCommand();
     /**
      * Method that registers a command to a provided slash command registry and runs the command on the provided Discord API
      * @param api the provided Discord API
      * @param slashCommandRegistry the provided slash command registry
      */
-    public static void run(DiscordApi api, SlashCommandHandler slashCommandRegistry){
+    public void run(DiscordApi api, SlashCommandHandler slashCommandRegistry){
         slashCommandRegistry.registerCommand("ping",
                 "A command that will make the bot greet you!",
                 new SlashPingCommand())
@@ -24,7 +28,6 @@ public class SlashCommandRunner {
                 .exceptionally(exception -> {   // Error message for failing to register the slash command to the registry
                     Main.logger.error("Unable to register slash command to the registry");
                     Main.logger.error(exception.getMessage());
-//                    exception.printStackTrace();
                     return null;
                 })
                 .join();
@@ -36,7 +39,6 @@ public class SlashCommandRunner {
                 .exceptionally(exception -> {   // Error message for failing to register the slash command to the registry
                     Main.logger.error("Unable to register slash command to the registry");
                     Main.logger.error(exception.getMessage());
-//                    exception.printStackTrace();
                     return null;
                 })
                 .join();
@@ -48,7 +50,6 @@ public class SlashCommandRunner {
                 .exceptionally(exception -> {   // Error message for failing to register the slash command to the registry
                     Main.logger.error("Unable to register slash command to the registry");
                     Main.logger.error(exception.getMessage());
-//                    exception.printStackTrace();
                     return null;
                 })
                 .join();
@@ -66,7 +67,6 @@ public class SlashCommandRunner {
                 .exceptionally(exception -> {   // Error message for failing to register the customized slash command to the registry
                     Main.logger.error("Unable to register customized slash command to the registry");
                     Main.logger.error(exception.getMessage());
-//                    exception.printStackTrace();
                     return null;
                 })
                 .join();
@@ -78,7 +78,30 @@ public class SlashCommandRunner {
                 .exceptionally(exception -> {   // Error message for failing to register the slash command to the registry
                     Main.logger.error("Unable to register slash command to the registry");
                     Main.logger.error(exception.getMessage());
-//                    exception.printStackTrace();
+                    return null;
+                })
+                .join();
+
+        SlashCommandBuilder playCommand = slashCommandRegistry.registerCommand("play",
+                "A command to play music",
+                slashPlayCommand);
+        SlashCommandCustomizer playCommandCustomizer = new SlashCommandCustomizer(playCommand);
+        playCommandCustomizer.addCommandOptionWithChoices(SlashCommandOptionType.STRING,
+                "audio-source",
+                "Name of the audio source to be searched",
+                true,
+                List.of(SlashCommandOptionChoice.create("YouTube", "youtube"))
+        );
+        playCommandCustomizer.addCommandOption(SlashCommandOptionType.STRING,
+                "search-string",
+                "String to be searched using the set audio source",
+                true
+        );
+        playCommandCustomizer.setCustomizations()
+                .createGlobal(api)
+                .exceptionally(exception -> {   // Error message for failing to register the customized slash command to the registry
+                    Main.logger.error("Unable to register customized slash command to the registry");
+                    Main.logger.error(exception.getMessage());
                     return null;
                 })
                 .join();

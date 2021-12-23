@@ -43,6 +43,16 @@ public class Main {
     public static String botIconURL = "https://i.imgur.com/ERxQB6z.png";
 
     /**
+     * Supported Audio Sources for voice channel audio playback
+     */
+    public static String[] audioSources = {
+            "youtube",
+            "soundcloud"
+    };
+
+    public static String youtubeApiKey = System.getenv().get("YT_API_KEY");
+
+    /**
      * The main logger object
      */
     public static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -51,6 +61,12 @@ public class Main {
      * The backend repository object for storing server preferences
      */
     public static DiscordServerRepository discordServerRepository = null;
+
+    public enum VoiceConnection {
+        Successful,
+        Unsuccessful,
+        AlreadyConnected
+    }
 
     @Autowired
     private GuildCommandHandler guildCommandRegistry;
@@ -63,6 +79,10 @@ public class Main {
 
     @Autowired
     private ServerLeaveHandler serverLeaveHandler;
+
+    public static GuildCommandRunner guildCommandRunner = new GuildCommandRunner();
+
+    public static SlashCommandRunner slashCommandRunner = new SlashCommandRunner();
 
     /**
      * Constructor for the Main class
@@ -108,10 +128,10 @@ public class Main {
         api.addServerLeaveListener(serverLeaveHandler);
 
         // Guild Commands
-        GuildCommandRunner.run(api, guildCommandRegistry);
+        guildCommandRunner.run(api, guildCommandRegistry);
 
         // Slash Commands
-        SlashCommandRunner.run(api, slashCommandRegistry);
+        slashCommandRunner.run(api, slashCommandRegistry);
 
         // Self mention listener
         AuxiliaryListeners.selfMentionListener(api);

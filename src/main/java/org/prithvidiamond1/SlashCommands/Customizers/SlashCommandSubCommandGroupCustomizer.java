@@ -11,18 +11,25 @@ import java.util.List;
  * <br>
  * Inherits {@link SlashCommandSubCommandCustomizer}
  */
-interface SlashCommandSubCommandGroupCustomizer extends SlashCommandSubCommandCustomizer {
+public abstract class SlashCommandSubCommandGroupCustomizer extends SlashCommandSubCommandCustomizer {
     /**
      * List to contain all the slash command sub command group customizations for a slash command
      */
-    List<SlashCommandOption> subCommandGroupList = new ArrayList<>();
+    List<SlashCommandOption> subCommandGroupList;
+
+    /**
+     * Constructor of this abstract class
+     */
+    public SlashCommandSubCommandGroupCustomizer(){
+        this.subCommandGroupList = new ArrayList<>();
+    }
 
     /**
      * Method to add a sub command group to the slash command
      * @param subCommandGroupName the name of the sub command group
      * @param subCommandGroupDesc the description of the sub command group
      */
-    default void addSubCommandGroup(String subCommandGroupName,
+    public void addSubCommandGroup(String subCommandGroupName,
                                     String subCommandGroupDesc) {
         SlashCommandOption subCommandGroup = SlashCommandOption.createWithOptions(
                 SlashCommandOptionType.SUB_COMMAND_GROUP,
@@ -37,7 +44,7 @@ interface SlashCommandSubCommandGroupCustomizer extends SlashCommandSubCommandCu
      * Method that returns the list of sub command groups added to the slash command
      * @return a list of the sub command groups added to the slash command
      */
-    default List<SlashCommandOption> getSubCommandGroupList() {
+    public List<SlashCommandOption> getSubCommandGroupList() {
         return this.subCommandGroupList;
     }
 

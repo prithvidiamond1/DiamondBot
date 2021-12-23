@@ -10,11 +10,18 @@ import java.util.List;
 /**
  * Interface that allows for the customization of slash commands using options
  */
-public interface SlashCommandOptionCustomizer {
+public abstract class SlashCommandOptionCustomizer {
     /**
      * List to contain all the slash command option customizations for a slash command
      */
-    List<SlashCommandOption> optionList = new ArrayList<>();
+    List<SlashCommandOption> optionList;
+
+    /**
+     * Constructor of this abstract class
+     */
+    public SlashCommandOptionCustomizer(){
+        this.optionList = new ArrayList<>();
+    }
 
     /**
      * Method to add an option to the slash command
@@ -23,7 +30,7 @@ public interface SlashCommandOptionCustomizer {
      * @param optionDesc the description of the option
      * @param required if the option is required or not to run the slash command
      */
-    default void addCommandOption(SlashCommandOptionType optionType,
+    public void addCommandOption(SlashCommandOptionType optionType,
                                          String optionName,
                                          String optionDesc,
                                          boolean required) {
@@ -44,7 +51,7 @@ public interface SlashCommandOptionCustomizer {
      * @param required if the option is required or not to run the slash command
      * @param optionChoices the choices for the option
      */
-    default void addCommandOptionWithChoices(SlashCommandOptionType optionType,
+    public void addCommandOptionWithChoices(SlashCommandOptionType optionType,
                                                     String optionName,
                                                     String optionDesc,
                                                     boolean required,
@@ -63,7 +70,7 @@ public interface SlashCommandOptionCustomizer {
      * Method that returns the list of options added to the slash command
      * @return a list of the options added to the slash command
      */
-    default List<SlashCommandOption> getOptionList() {
+    public List<SlashCommandOption> getOptionList() {
         return this.optionList;
     }
 }

@@ -1,11 +1,12 @@
 package org.prithvidiamond1.SlashCommands.Customizers;
 
 import org.javacord.api.interaction.SlashCommandBuilder;
+import org.prithvidiamond1.Main;
 
 /**
  * This class contains methods to customize slash commands by implementing {@link SlashCommandCustomizerInterface}
  */
-public class SlashCommandCustomizer implements SlashCommandCustomizerInterface {
+public class SlashCommandCustomizer extends SlashCommandCustomizerInterface {
     private final SlashCommandBuilder command;
 
     /**
@@ -25,7 +26,7 @@ public class SlashCommandCustomizer implements SlashCommandCustomizerInterface {
             if (this.getSubCommandList().isEmpty()){
                 if (this.getOptionList().isEmpty()){
                     // Option-less slash command handling perhaps? -> not required
-                    System.out.println("No options set for this slash command");
+                    Main.logger.info(String.format("No options set for this slash command: %s", this.command.toString()));
                 }
                 else {
                     this.command.setOptions(this.getOptionList());
