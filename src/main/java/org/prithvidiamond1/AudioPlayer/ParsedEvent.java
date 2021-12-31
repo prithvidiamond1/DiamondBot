@@ -8,6 +8,7 @@ import org.javacord.api.entity.server.Server;
 import org.javacord.api.event.Event;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.message.MessageCreateEvent;
+import org.javacord.api.interaction.callback.InteractionOriginalResponseUpdater;
 import org.prithvidiamond1.Main;
 
 public class ParsedEvent{
@@ -63,15 +64,33 @@ public class ParsedEvent{
                     });
         }
         else if (this.slashCommandCreateEvent != null){
-            this.slashCommandCreateEvent.getSlashCommandInteraction().createImmediateResponder()
-                    .addEmbed(embed)
-                    .addComponents(actionRow)
-                    .respond()
-                    .exceptionally(exception -> {
-                        Main.logger.error("Error trying to send embed!");
-                        Main.logger.error(exception.getMessage());
-                        return null;
-                    });
+            ActionRow finalActionRow = actionRow;
+            this.slashCommandCreateEvent.getSlashCommandInteraction().respondLater().thenAccept(InteractionOriginalResponseUpdater->{
+                InteractionOriginalResponseUpdater.addEmbed(embed)
+                        .addComponents(finalActionRow)
+                        .update();
+            });
+
+//            slashCommandCreateEvent.getSlashCommandInteraction().getChannel().ifPresent(textChannel -> {
+//                new MessageBuilder()
+//                        .addEmbed(embed)
+//                        .addComponents(finalActionRow)
+//                        .send(textChannel)
+//                        .exceptionally(exception -> {
+//                            Main.logger.error("Error trying to send embed!");
+//                            Main.logger.error(exception.getMessage());
+//                            return null;
+//                        });
+//            });
+//            this.slashCommandCreateEvent.getSlashCommandInteraction().createImmediateResponder()
+//                    .addEmbed(embed)
+//                    .addComponents(actionRow)
+//                    .respond()
+//                    .exceptionally(exception -> {
+//                        Main.logger.error("Error trying to send embed!");
+//                        Main.logger.error(exception.getMessage());
+//                        return null;
+//                    });
         }
     }
 }
