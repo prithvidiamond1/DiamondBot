@@ -97,7 +97,6 @@ public class TrackScheduler implements AudioEventListener {
                 .setColor(Main.botAccentColor)
                 .setThumbnail(thumbnailUrl);
         this.event.sendEmbed(embedMessage, this.actionRow);
-
     }
 
     public void onTrackEnd(AudioTrack track, AudioTrackEndReason endReason){

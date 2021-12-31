@@ -9,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import org.javacord.api.audio.AudioSource;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
+import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
@@ -178,6 +179,7 @@ public class SlashPlayCommand implements SlashCommandInterface {
                                                         .setDescription(embedDescription)
                                                         .setColor(Main.botAccentColor)
                                                         .setThumbnail(Main.botIconURL))
+                                                .addComponents(this.audioSourceHandler.audioSource.scheduler.actionRow)
                                                 .respond()
                                                 .exceptionally(exception -> {
                                                     Main.logger.error("Unable to respond to the guild command!");
