@@ -133,15 +133,16 @@ public class SlashPlayCommand implements SlashCommandInterface {
                         playerManager.registerSourceManager(youtubeSourceManager);
                         PlayerAudioSource playerAudioSource = new PlayerAudioSource(event.getApi(), playerManager, new ParsedEvent(event));
                         Main.VoiceConnection voiceConnectionState = connectToSource(event, playerAudioSource);
+                        Main.logger.info(String.format("VoiceConnectionStatus = %s", voiceConnectionState.toString()));
                         if (voiceConnectionState.equals(Main.VoiceConnection.Successful)) {
                             if (Main.guildCommandRunner.guildPlayCommand.audioSourceHandler == null) {
                                 this.audioSourceHandler = new AudioSourceLoadResultHandler(playerAudioSource);
                             }
 
-                            PlayerControlsHandler playerControlsRegistry = new PlayerControlsHandler(audioSourceHandler);
+                            PlayerControlsHandler playerControlsRegistry = new PlayerControlsHandler(this.audioSourceHandler);
                             event.getApi().addMessageComponentCreateListener(playerControlsRegistry);
 
-                            playerManager.loadItem(videoLink, audioSourceHandler);
+                            playerManager.loadItem(videoLink, this.audioSourceHandler);
 
                         } else if (voiceConnectionState.equals(Main.VoiceConnection.AlreadyConnected)) {
 

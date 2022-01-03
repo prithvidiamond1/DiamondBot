@@ -150,10 +150,10 @@ public class GuildPlayCommand implements GuildCommandInterface {
                                 this.audioSourceHandler = new AudioSourceLoadResultHandler(playerAudioSource);
                             }
 
-                            PlayerControlsHandler playerControlsRegistry = new PlayerControlsHandler(audioSourceHandler);
+                            PlayerControlsHandler playerControlsRegistry = new PlayerControlsHandler(this.audioSourceHandler);
                             event.getApi().addMessageComponentCreateListener(playerControlsRegistry);
 
-                            playerManager.loadItem(videoLink, audioSourceHandler);
+                            playerManager.loadItem(videoLink, this.audioSourceHandler);
 
                         } else if (voiceConnectionState.equals(Main.VoiceConnection.AlreadyConnected)) {
 
