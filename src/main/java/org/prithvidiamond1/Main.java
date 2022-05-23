@@ -5,12 +5,8 @@ import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.server.Server;
 import org.prithvidiamond1.DB.Models.DiscordServer;
 import org.prithvidiamond1.DB.Repositories.DiscordServerRepository;
-import org.prithvidiamond1.GuildCommands.GuildCommandHandler;
-import org.prithvidiamond1.GuildCommands.GuildCommandRunner;
 import org.prithvidiamond1.HelperHandlers.ServerJoinHandler;
 import org.prithvidiamond1.HelperHandlers.ServerLeaveHandler;
-import org.prithvidiamond1.SlashCommands.SlashCommandHandler;
-import org.prithvidiamond1.SlashCommands.SlashCommandRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,11 +64,14 @@ public class Main {
         AlreadyConnected
     }
 
-    @Autowired
-    private GuildCommandHandler guildCommandRegistry;
+//    @Autowired
+//    private GuildCommandHandler guildCommandRegistry;
+//
+//    @Autowired
+//    private SlashCommandHandler slashCommandRegistry;
 
     @Autowired
-    private SlashCommandHandler slashCommandRegistry;
+    private CommandHandler commandHandler;
 
     @Autowired
     private ServerJoinHandler serverJoinHandler;
@@ -80,9 +79,11 @@ public class Main {
     @Autowired
     private ServerLeaveHandler serverLeaveHandler;
 
-    public static GuildCommandRunner guildCommandRunner = new GuildCommandRunner();
+//    public static GuildCommandRunner guildCommandRunner = new GuildCommandRunner();
+//
+//    public static SlashCommandRunner slashCommandRunner = new SlashCommandRunner();
 
-    public static SlashCommandRunner slashCommandRunner = new SlashCommandRunner();
+    public static CommandRegister commandRegister = new CommandRegister();
 
     /**
      * Constructor for the Main class
@@ -127,11 +128,14 @@ public class Main {
         api.addServerJoinListener(serverJoinHandler);
         api.addServerLeaveListener(serverLeaveHandler);
 
-        // Guild Commands
-        guildCommandRunner.run(api, guildCommandRegistry);
+//        // Guild Commands
+//        guildCommandRunner.run(api, guildCommandRegistry);
+//
+//        // Slash Commands
+//        slashCommandRunner.run(api, slashCommandRegistry);
 
-        // Slash Commands
-        slashCommandRunner.run(api, slashCommandRegistry);
+        // Commands
+        commandRegister.run(api, commandHandler);
 
         // Self mention listener
         AuxiliaryListeners.selfMentionListener(api);
