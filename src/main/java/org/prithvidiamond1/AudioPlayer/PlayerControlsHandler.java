@@ -12,92 +12,92 @@ import org.prithvidiamond1.AudioPlayer.Youtube.YoutubeSearchEngine;
 import org.prithvidiamond1.Main;
 
 public class PlayerControlsHandler implements MessageComponentCreateListener {
-    private final AudioSourceLoadResultHandler audioSourceHandler;
+    private final AudioSourceHandler audioSourceHandler;
 
-    public PlayerControlsHandler(AudioSourceLoadResultHandler audioSourceHandler){
+    public final static ActionRow playerActionRow = ActionRow.of(
+            Button.danger("PlayPause", "Play/Pause ⏯"),
+            Button.secondary("SkipToNextTrack", "Skip to next track ⏭")
+    );
+
+    public PlayerControlsHandler(AudioSourceHandler audioSourceHandler) {
         this.audioSourceHandler = audioSourceHandler;
+    }
+
+    private void playPause(MessageComponentInteraction componentInteraction){
+        componentInteraction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
+            YoutubeSearchEngine youtube = new YoutubeSearchEngine();
+            VideoSnippet video = youtube.getVideoSnippetById(this.audioSourceHandler.playerAudioSource.audioPlayer.getPlayingTrack().getIdentifier());
+            String thumbnailUrl = video.getThumbnails().getStandard().getUrl();
+
+            boolean playerPaused = this.audioSourceHandler.playerAudioSource.audioPlayer.isPaused();
+            if (playerPaused){
+//                        this.audioSourceHandler.audioSource.scheduler.onPlayerResume();
+                this.audioSourceHandler.playerAudioSource.audioPlayer.setPaused(false);
+                componentInteraction.createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
+                                .setTitle("Resumed Playback")
+                                .setDescription(this.audioSourceHandler.playerAudioSource.audioPlayer.getPlayingTrack().getInfo().title)
+                                .setColor(Main.botAccentColor)
+                                .setThumbnail(thumbnailUrl))
+                        .addComponents(playerActionRow).send();
+            } else{
+//                        this.audioSourceHandler.audioSource.scheduler.onPlayerPause();
+                this.audioSourceHandler.playerAudioSource.audioPlayer.setPaused(true);
+                componentInteraction.createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
+                                .setTitle("Playback Paused")
+                                .setDescription(this.audioSourceHandler.playerAudioSource.audioPlayer.getPlayingTrack().getInfo().title)
+                                .setColor(Main.botAccentColor)
+                                .setThumbnail(thumbnailUrl))
+                        .addComponents(playerActionRow).send();
+            }
+        }).exceptionally(exception -> {
+            Main.logger.error("Unable to register play/pause action!");
+            Main.logger.error(exception.getMessage());
+            return null;
+        });
+    }
+
+    private void skipToNextTrack(MessageComponentInteraction componentInteraction){
+        componentInteraction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
+            AudioTrack nextTrack = this.audioSourceHandler.playerAudioSource.trackScheduler.getNextTrackInQueue();
+            if (this.audioSourceHandler.playerAudioSource.trackScheduler.getQueueSize() > 0) {
+                componentInteraction.createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
+                        .setTitle("Skipping forward to next track")
+                        .setDescription(String.format("Skipping forward to %s", nextTrack.getInfo().title))
+                        .setColor(Main.botAccentColor)
+                        .setThumbnail(Main.botIconURL)
+                ).send().exceptionally(exception -> {
+                    Main.logger.error("Unable to respond to this interaction!");
+                    Main.logger.error(exception.getMessage());
+                    return null;
+                });
+                this.audioSourceHandler.playerAudioSource.trackScheduler.nextTrack();
+            } else {
+                componentInteraction.createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
+                        .setTitle("No tracks currently in queue to skip forward to")
+                        .setDescription("Add some tracks to the queue and then try skipping forward to them")
+                        .setColor(Main.botAccentColor)
+                        .setThumbnail(Main.botIconURL)
+                ).send();
+            }
+        }).exceptionally(exception -> {
+            Main.logger.info("Unable to register skip forward action!");
+            Main.logger.info(exception.getMessage());
+            return null;
+        });
     }
 
     @Override
     public void onComponentCreate(MessageComponentCreateEvent event) {
-        MessageComponentInteraction interaction = event.getMessageComponentInteraction();
-        String customId = interaction.getCustomId();
+        MessageComponentInteraction componentInteraction = event.getMessageComponentInteraction();
+        String customId = componentInteraction.getCustomId();
 
         switch (customId){
             case "PlayPause":
-                interaction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
-                    YoutubeSearchEngine youtube = new YoutubeSearchEngine();
-                    VideoSnippet video = youtube.getVideoSnippetById(this.audioSourceHandler.audioSource.scheduler.player.getPlayingTrack().getIdentifier());
-                    String thumbnailUrl = video.getThumbnails().getStandard().getUrl();
-
-                    boolean playerPaused = this.audioSourceHandler.audioSource.scheduler.player.isPaused();
-                    if (playerPaused){
-//                        this.audioSourceHandler.audioSource.scheduler.onPlayerResume();
-                        this.audioSourceHandler.audioSource.scheduler.player.setPaused(false);
-                        interaction.createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
-                                        .setTitle("Resumed Playback")
-                                        .setDescription(this.audioSourceHandler.audioSource.scheduler.player.getPlayingTrack().getInfo().title)
-                                        .setColor(Main.botAccentColor)
-                                        .setThumbnail(thumbnailUrl))
-                                .addComponents(
-                                        ActionRow.of(
-                                                Button.danger("PlayPause", "Play/Pause ⏯"),
-                                                Button.secondary("SkipNextTrack", "Skip to next track ⏭")
-                                        )
-                                ).send();
-                    } else{
-//                        this.audioSourceHandler.audioSource.scheduler.onPlayerPause();
-                        this.audioSourceHandler.audioSource.scheduler.player.setPaused(true);
-                        interaction.createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
-                                        .setTitle("Playback Paused")
-                                        .setDescription(this.audioSourceHandler.audioSource.scheduler.player.getPlayingTrack().getInfo().title)
-                                        .setColor(Main.botAccentColor)
-                                .setThumbnail(thumbnailUrl))
-                                .addComponents(
-                                        ActionRow.of(
-                                                Button.danger("PlayPause", "Play/Pause ⏯"),
-                                                Button.secondary("SkipNextTrack", "Skip to next track ⏭")
-                                        )
-                                ).send();
-                    }
-                }).exceptionally(exception -> {
-                    Main.logger.error("Unable to register play/pause action!");
-                    Main.logger.error(exception.getMessage());
-                    return null;
-                });
-
+                playPause(componentInteraction);
                 break;
-            case "SkipNextTrack":
-                interaction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
-                    AudioTrack nextTrack = this.audioSourceHandler.audioSource.scheduler.getNextTrackInQueue();
-                    if (this.audioSourceHandler.audioSource.scheduler.getQueueSize() > 0) {
-                        interaction.createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
-                                .setTitle("Skipping forward to next track")
-                                .setDescription(String.format("Skipping forward to %s", nextTrack.getInfo().title))
-                                .setColor(Main.botAccentColor)
-                                .setThumbnail(Main.botIconURL)
-                        ).send().exceptionally(exception -> {
-                            Main.logger.error("Unable to respond to this interaction!");
-                            Main.logger.error(exception.getMessage());
-                            return null;
-                        });
-                        this.audioSourceHandler.audioSource.scheduler.nextTrack();
-                    } else {
-                        interaction.createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
-                                .setTitle("No tracks currently in queue to skip forward to")
-                                .setDescription("Add some tracks to the queue and then try skipping forward to them")
-                                .setColor(Main.botAccentColor)
-                                .setThumbnail(Main.botIconURL)
-                        ).send();
-                    }
-                }).exceptionally(exception -> {
-                    Main.logger.info("Unable to register skip forward action!");
-                    Main.logger.info(exception.getMessage());
-                    return null;
-                });
-
+            case "SkipToNextTrack":
+                skipToNextTrack(componentInteraction);
                 break;
-
         }
     }
 }

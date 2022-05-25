@@ -58,7 +58,7 @@ public class Main {
      */
     public static DiscordServerRepository discordServerRepository = null;
 
-    public enum VoiceConnection {
+    public enum VoiceConnectionStatus {
         Successful,
         Unsuccessful,
         AlreadyConnected

@@ -1,29 +1,38 @@
 package org.prithvidiamond1.AudioPlayer;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.audio.AudioSource;
 import org.javacord.api.audio.AudioSourceBase;
+import org.javacord.api.entity.channel.ServerVoiceChannel;
+import org.javacord.api.entity.channel.TextChannel;
 
 public class PlayerAudioSource extends AudioSourceBase {
-    private final ParsedEvent event;
-    private final AudioPlayerManager manager;
-    private AudioFrame lastFrame;
 
-    public final TrackScheduler scheduler;
+    private AudioFrame lastFrame;
+    private TextChannel textChannel;
+    private ServerVoiceChannel serverVoiceChannel;
+    private final AudioPlayerManager audioPlayerManager;
+
+    public final AudioPlayer audioPlayer;
+    public final TrackScheduler trackScheduler;
 
     /**
      * Creates a new audio source base.
      *
      * @param api The discord api instance.
+     * @param audioPlayerManager the audio player manager
      */
-    public PlayerAudioSource(DiscordApi api, AudioPlayerManager manager, ParsedEvent event) {
+    public PlayerAudioSource(DiscordApi api, TextChannel textChannel, ServerVoiceChannel serverVoiceChannel, AudioPlayerManager audioPlayerManager) {
         super(api);
-        this.event = event;
-        this.manager = manager;
-        this.scheduler = new TrackScheduler(this.manager.createPlayer(), event);
-        this.scheduler.player.addListener(scheduler);
+        this.audioPlayerManager = audioPlayerManager;
+        this.textChannel = textChannel;
+        this.serverVoiceChannel = serverVoiceChannel;
+        this.trackScheduler = new TrackScheduler(api, this.textChannel, this.serverVoiceChannel, this.audioPlayerManager.createPlayer());
+        this.trackScheduler.audioPlayer.addListener(trackScheduler);
+        this.audioPlayer = this.trackScheduler.audioPlayer;
     }
 
     @Override
@@ -41,12 +50,12 @@ public class PlayerAudioSource extends AudioSourceBase {
 
     @Override
     public boolean hasNextFrame() {
-        this.lastFrame = this.scheduler.player.provide();
+        this.lastFrame = this.trackScheduler.audioPlayer.provide();
         return lastFrame != null;
     }
 
     @Override
     public AudioSource copy() {
-        return new PlayerAudioSource(getApi(), this.manager, this.event);
+        return new PlayerAudioSource(getApi(), this.textChannel, this.serverVoiceChannel, this.audioPlayerManager);
     }
 }

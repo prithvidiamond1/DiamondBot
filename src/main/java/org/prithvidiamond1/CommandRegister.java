@@ -74,7 +74,7 @@ public class CommandRegister {
 
         SlashCommandBuilder playCommand = commandHandler.registerCommand("play",
                 "A command to play music",
-                this.slashPlayCommand);
+                new PlayCommand());
         SlashCommandCustomizer playCommandCustomizer = new SlashCommandCustomizer(playCommand);
         playCommandCustomizer.addCommandOptionWithChoices(SlashCommandOptionType.STRING,
                 "audio-source",

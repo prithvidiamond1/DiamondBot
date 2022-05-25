@@ -6,8 +6,10 @@ import com.sedmelluq.discord.lavaplayer.player.event.*;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import org.javacord.api.entity.message.component.ActionRow;
-import org.javacord.api.entity.message.component.Button;
+import org.javacord.api.DiscordApi;
+import org.javacord.api.entity.channel.ServerVoiceChannel;
+import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.prithvidiamond1.AudioPlayer.Youtube.YoutubeSearchEngine;
 import org.prithvidiamond1.Main;
@@ -15,35 +17,24 @@ import org.prithvidiamond1.Main;
 import java.util.concurrent.*;
 
 public class TrackScheduler implements AudioEventListener {
+
+    private AudioTrack lastPlayedTrack;
+    private TextChannel textChannel;
+    private ServerVoiceChannel serverVoiceChannel;
     private ScheduledExecutorService scheduledExecutorService;
 
-    private final ParsedEvent event;
+    private final DiscordApi api;
     private final BlockingQueue<AudioTrack> trackQueue;
-    private AudioTrack lastPlayedTrack;
 
-    public final AudioPlayer player;
-    public final ActionRow actionRow;
+    public final AudioPlayer audioPlayer;
 
-    public TrackScheduler(AudioPlayer player, ParsedEvent event){
-        this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
-        this.event = event;
-        this.player = player;
+    public TrackScheduler(DiscordApi api, TextChannel textChannel, ServerVoiceChannel serverVoiceChannel, AudioPlayer audioPlayer) {
+        this.api = api;
+        this.audioPlayer = audioPlayer;
         this.trackQueue = new LinkedBlockingQueue<>(100);
-        this.actionRow = ActionRow.of(
-                Button.danger("PlayPause", "Play/Pause ⏯"),
-                Button.secondary("SkipNextTrack", "Skip to next track ⏭")
-        );
-    }
-
-    private Runnable botDisconnect(){
-        return () -> this.event.getServer()
-                .getConnectedVoiceChannel(this.event.getApi().getYourself())
-                .ifPresent(voiceChannel -> voiceChannel.disconnect()
-                        .exceptionally(exception -> {
-                            Main.logger.error("An error occurred when trying to disconnect from a voice channel");
-                            Main.logger.error(exception.getMessage());
-                            return null;
-                        }));
+        this.textChannel = textChannel;
+        this.serverVoiceChannel = serverVoiceChannel;
+        this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
     }
 
     public int getQueueSize(){
@@ -54,20 +45,29 @@ public class TrackScheduler implements AudioEventListener {
         return this.trackQueue.peek();
     }
 
+    public void nextTrack(){
+        this.audioPlayer.startTrack(this.trackQueue.poll(), false);
+    }
+
     public void queue(AudioTrack track){
         boolean addedToQueue = false;
-        if(!this.player.startTrack(track, true)){
+        if(!this.audioPlayer.startTrack(track, true)){
             addedToQueue = this.trackQueue.offer(track);
         }
         Main.logger.info(String.format("Track successfully added to queue: %b", addedToQueue));
         Main.logger.info(String.format("Queue size: %d", this.trackQueue.size()));
     }
 
-    public void nextTrack(){
-        this.player.startTrack(this.trackQueue.poll(), false);
+    private Runnable botDisconnect(){
+        return () -> this.serverVoiceChannel.disconnect()
+                        .exceptionally(exception -> {
+                            Main.logger.error("An error occurred when trying to disconnect from a voice channel");
+                            Main.logger.error(exception.getMessage());
+                            return null;
+                        });
     }
 
-    public void onPlayerPause() {
+    private void onPlayerPause() {
         Runnable task = botDisconnect();
         if (this.scheduledExecutorService.isShutdown()){
             this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
@@ -75,7 +75,7 @@ public class TrackScheduler implements AudioEventListener {
         this.scheduledExecutorService.schedule(task, 1, TimeUnit.MINUTES);
     }
 
-    public void onPlayerResume() {
+    private void onPlayerResume() {
         this.scheduledExecutorService.shutdownNow();
         if (this.scheduledExecutorService.isShutdown()){
             Main.logger.info("The bot disconnect scheduler has been shutdown intermittently and can be reset now");
@@ -84,48 +84,52 @@ public class TrackScheduler implements AudioEventListener {
         }
     }
 
-    public void onTrackStart(AudioTrack track){
+    private void onTrackStart(AudioTrack track) {
         this.lastPlayedTrack = track;
 
         YoutubeSearchEngine youtube = new YoutubeSearchEngine();
         VideoSnippet video = youtube.getVideoSnippetById(track.getIdentifier());
         String thumbnailUrl = video.getThumbnails().getStandard().getUrl();
 
-        EmbedBuilder embedMessage = new EmbedBuilder()
+        EmbedBuilder embed = new EmbedBuilder()
                 .setTitle("Playing")
                 .setDescription(track.getInfo().title)
                 .setColor(Main.botAccentColor)
                 .setThumbnail(thumbnailUrl);
-        this.event.sendEmbed(embedMessage, this.actionRow);
+
+        new MessageBuilder().addEmbed(embed)
+                .addComponents(PlayerControlsHandler.playerActionRow)
+                .send(this.textChannel)
+                .exceptionally(exception -> {
+                    Main.logger.error("Error trying to send embed!");
+                    Main.logger.error(exception.getMessage());
+                    return null;
+                });
     }
 
-    public void onTrackEnd(AudioTrack track, AudioTrackEndReason endReason){
+    private void onTrackEnd(AudioTrack track, AudioTrackEndReason endReason) {
         if(endReason.mayStartNext){
             nextTrack();
         }
 
-        boolean isPlayingTrackNull = this.player.getPlayingTrack() == null;
+        boolean isPlayingTrackNull = this.audioPlayer.getPlayingTrack() == null;
         Main.logger.info(String.format("Is Playing Track Null: %b", isPlayingTrackNull));
-        if (getQueueSize() == 0){
-            this.event.getServer()
-                    .getConnectedVoiceChannel(this.event.getApi().getYourself())
-                    .ifPresent(voiceChannel -> voiceChannel.disconnect()
+        if (getQueueSize() == 0 && isPlayingTrackNull){
+            this.serverVoiceChannel.disconnect()
                     .exceptionally(exception -> {
                         Main.logger.error("An error occurred when trying to disconnect from a voice channel");
                         Main.logger.error(exception.getMessage());
                         return null;
-                    }));
+                    });
         }
     }
 
-    // Temporary implementation
-    public void onTrackException(AudioTrack track, FriendlyException exception){
+    private void onTrackException(AudioTrack track, FriendlyException exception) {
         Main.logger.error(String.format("Error during playback of the following track '%s'", track.getIdentifier()));
         Main.logger.error(exception.getMessage());
     }
 
-    // Temporary implementation
-    public void onTrackStuck(AudioTrack track, long thresholdMs, StackTraceElement[] stackTrace){
+    private void onTrackStuck(AudioTrack track, long thresholdMs, StackTraceElement[] stackTrace) {
         Main.logger.error(String.format("Error during playback of the following track '%s' at threshold '%d'",
                 track.getIdentifier(),
                 thresholdMs));
