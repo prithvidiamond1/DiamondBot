@@ -19,7 +19,6 @@ import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
-//import org.prithvidiamond1.AudioPlayer.ParsedEvent;
 import org.prithvidiamond1.AudioPlayer.AudioSourceHandler;
 import org.prithvidiamond1.AudioPlayer.PlayerAudioSource;
 import org.prithvidiamond1.AudioPlayer.PlayerControlsHandler;
@@ -38,7 +37,7 @@ public class PlayCommand implements Command {
     private AudioSourceHandler audioSourceHandler;
     private YoutubeAudioSourceManager youtubeSourceManager;
 
-    private Pair<Main.VoiceConnectionStatus, EmbedBuilder> connectToSource(DiscordApi api, User user, Server server, AudioSource source) {
+    private Pair<Main.VoiceConnectionStatus, EmbedBuilder> findVoiceChannel(DiscordApi api, User user, Server server){
         Pair<Main.VoiceConnectionStatus, EmbedBuilder> result;
         EmbedBuilder response = null;
         Main.VoiceConnectionStatus voiceConnectionStatusState = Main.VoiceConnectionStatus.Unsuccessful;
@@ -50,13 +49,6 @@ public class PlayCommand implements Command {
                 voiceConnectionStatusState = Main.VoiceConnectionStatus.AlreadyConnected;
             } else {
                 this.serverVoiceChannel = server.getConnectedVoiceChannel(senderId).get();
-                serverVoiceChannel.connect()
-                        .thenAccept(audioConnection -> audioConnection.setAudioSource(source))
-                        .exceptionally(exception -> {
-                            Main.logger.error("Unexpected error trying to play the requested audio!");
-                            Main.logger.error(exception.getMessage());
-                            return null;
-                        });
                 voiceConnectionStatusState = Main.VoiceConnectionStatus.Successful;
             }
         } else {
@@ -67,12 +59,6 @@ public class PlayCommand implements Command {
                     if (voiceChannel.getConnectedUsers().isEmpty()) {
                         emptyVoiceChannelPresent = true;
                         this.serverVoiceChannel = voiceChannel;
-                        this.serverVoiceChannel.connect().thenAccept(audioConnection -> audioConnection.setAudioSource(source))
-                                .exceptionally(exception -> {
-                                    Main.logger.error("Unexpected error trying to play the requested audio!");
-                                    Main.logger.error(exception.getMessage());
-                                    return null;
-                                });
                         voiceConnectionStatusState = Main.VoiceConnectionStatus.Successful;
                     } else {
                         Main.logger.info(String.format("Bot connection status: Is connected = %b",
@@ -97,11 +83,36 @@ public class PlayCommand implements Command {
                         .setColor(Main.botAccentColor);
             }
         }
-//        }
+
+        if (voiceConnectionStatusState.equals(Main.VoiceConnectionStatus.Successful)){
+            response = new EmbedBuilder()
+                    .setTitle(String.format("Joining Voice Channel - %s", this.serverVoiceChannel.getName()))
+                    .setDescription("If you need me to join a different voice channel, join the voice channel before calling the play command")
+                    .setThumbnail(Main.botIconURL)
+                    .setColor(Main.botAccentColor);
+        } else if (voiceConnectionStatusState.equals(Main.VoiceConnectionStatus.AlreadyConnected)) {
+            response = new EmbedBuilder()
+                    .setTitle(String.format("Already connected to Channel - %s", this.serverVoiceChannel.getName()))
+                    .setDescription("If you need me to join a different voice channel, join the voice channel before calling the play command")
+                    .setThumbnail(Main.botIconURL)
+                    .setColor(Main.botAccentColor);
+        }
 
         result = new Pair<>(voiceConnectionStatusState, response);
 
         return result;
+    }
+
+    private void connectToSource(ServerVoiceChannel voiceChannel, Main.VoiceConnectionStatus voiceConnectionStatus, AudioSource source) {
+        if (voiceConnectionStatus.equals(Main.VoiceConnectionStatus.Successful)) {
+            voiceChannel.connect()
+                    .thenAccept(audioConnection -> audioConnection.setAudioSource(source))
+                    .exceptionally(exception -> {
+                        Main.logger.error("Unexpected error trying to play the requested audio!");
+                        Main.logger.error(exception.getMessage());
+                        return null;
+                    });
+        }
     }
 
     private String parseCommandArgs(String[] commandArgs){
@@ -136,10 +147,12 @@ public class PlayCommand implements Command {
             audioPlayerManager.registerSourceManager(this.youtubeSourceManager);
         }
 
-        PlayerAudioSource playerAudioSource = new PlayerAudioSource(api, this.textChannel, this.serverVoiceChannel, audioPlayerManager);
-        Pair<Main.VoiceConnectionStatus, EmbedBuilder> connectionResponse = connectToSource(api, user, server, playerAudioSource);
+
+        Pair<Main.VoiceConnectionStatus, EmbedBuilder> connectionResponse = findVoiceChannel(api, user, server);
         Main.VoiceConnectionStatus voiceConnectionStatus = connectionResponse.first();
-        Main.logger.info(String.format("VoiceConnectionStatus = %s", voiceConnectionStatus.toString()));
+        PlayerAudioSource playerAudioSource = new PlayerAudioSource(api, this.textChannel, this.serverVoiceChannel, audioPlayerManager);
+        connectToSource(this.serverVoiceChannel, voiceConnectionStatus, playerAudioSource);
+        Main.logger.info(String.format("VoiceConnectionStatus = %s", voiceConnectionStatus));
 
         if (voiceConnectionStatus.equals(Main.VoiceConnectionStatus.Successful)){
             this.audioSourceHandler = new AudioSourceHandler(playerAudioSource);
@@ -154,8 +167,11 @@ public class PlayCommand implements Command {
                 audioPlayerManager.loadItem(audioSourceLink, this.audioSourceHandler);
             } else {
                 // Queue the new track
-                AudioItem newTrackItem = youtubeSourceManager.loadTrackWithVideoId(fetchYoutubeSourceById(searchString), true);
-                if (newTrackItem.equals(AudioReference.NO_TRACK)) {
+                AudioItem newTrackItem = null;
+                if (source.equalsIgnoreCase("youtube")) {
+                    newTrackItem = this.youtubeSourceManager.loadTrackWithVideoId(fetchYoutubeSourceById(searchString), true);
+                }
+                if (newTrackItem == null || newTrackItem.equals(AudioReference.NO_TRACK)) {
                     functionResponse = new EmbedBuilder()
                                     .setTitle("Requested video/song not found!")
                                     .setDescription("Make sure the video being searched is public")

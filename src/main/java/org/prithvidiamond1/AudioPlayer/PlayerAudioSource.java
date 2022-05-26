@@ -30,7 +30,7 @@ public class PlayerAudioSource extends AudioSourceBase {
         this.audioPlayerManager = audioPlayerManager;
         this.textChannel = textChannel;
         this.serverVoiceChannel = serverVoiceChannel;
-        this.trackScheduler = new TrackScheduler(api, this.textChannel, this.serverVoiceChannel, this.audioPlayerManager.createPlayer());
+        this.trackScheduler = new TrackScheduler(this.textChannel, this.serverVoiceChannel, this.audioPlayerManager.createPlayer());
         this.trackScheduler.audioPlayer.addListener(trackScheduler);
         this.audioPlayer = this.trackScheduler.audioPlayer;
     }

@@ -6,6 +6,7 @@ import org.prithvidiamond1.Main;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.List;
 
 public class YoutubeSearchEngine {
     public YouTube youtube;
@@ -25,7 +26,7 @@ public class YoutubeSearchEngine {
         SearchListResponse searchResponse = null;
 
         try {
-            searchRequest = this.youtube.search().list("snippet");
+            searchRequest = this.youtube.search().list(List.of("snippet"));
             searchResponse = searchRequest.setMaxResults(25L)
                     .setQ(searchString)
                     .setKey(Main.youtubeApiKey)
@@ -43,9 +44,9 @@ public class YoutubeSearchEngine {
         YouTube.Videos.List request;
         VideoListResponse response = null;
         try {
-            request = this.youtube.videos().list("snippet");
+            request = this.youtube.videos().list(List.of("snippet"));
             response = request.setMaxResults(1L)
-                    .setId(videoId)
+                    .setId(List.of(videoId))
                     .setKey(Main.youtubeApiKey)
                     .execute();
         } catch (IOException exception) {

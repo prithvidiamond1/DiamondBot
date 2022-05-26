@@ -23,13 +23,11 @@ public class TrackScheduler implements AudioEventListener {
     private ServerVoiceChannel serverVoiceChannel;
     private ScheduledExecutorService scheduledExecutorService;
 
-    private final DiscordApi api;
     private final BlockingQueue<AudioTrack> trackQueue;
 
     public final AudioPlayer audioPlayer;
 
-    public TrackScheduler(DiscordApi api, TextChannel textChannel, ServerVoiceChannel serverVoiceChannel, AudioPlayer audioPlayer) {
-        this.api = api;
+    public TrackScheduler(TextChannel textChannel, ServerVoiceChannel serverVoiceChannel, AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
         this.trackQueue = new LinkedBlockingQueue<>(100);
         this.textChannel = textChannel;
