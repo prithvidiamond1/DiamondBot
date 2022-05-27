@@ -40,7 +40,6 @@ public class ServerHelperFunctions {
                 .exceptionally(exception -> {   // Error message for failing to get the list of global slash commands
                     Main.logger.error("Unable to retrieve list of global slash commands!");
                     Main.logger.error(exception.getMessage());
-//                    exception.printStackTrace();
                     return null;
                 })
                 .join();
@@ -53,7 +52,6 @@ public class ServerHelperFunctions {
                         .exceptionally(exception -> {   // Error message for failing to get global slash command by command id
                             Main.logger.error("Unable to retrieve global slash command by id!");
                             Main.logger.error(exception.getMessage());
-//                            exception.printStackTrace();
                             return null;
                         })
                         .join();
@@ -62,7 +60,6 @@ public class ServerHelperFunctions {
                         .exceptionally(exception -> {   // Error message for failing to delete command that needed to be removed
                             Main.logger.error("Unable to delete the requested global slash command!");
                             Main.logger.error(exception.getMessage());
-//                            exception.printStackTrace();
                             return null;
                         })
                         .join();

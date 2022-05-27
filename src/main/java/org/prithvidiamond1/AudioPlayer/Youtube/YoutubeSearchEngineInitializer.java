@@ -9,6 +9,9 @@ import com.google.api.services.youtube.YouTube;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
+/**
+ * Class for initializing a YouTube Search Engine API instance
+ */
 public class YoutubeSearchEngineInitializer {
     final private static JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 

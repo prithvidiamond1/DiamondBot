@@ -64,12 +64,6 @@ public class Main {
         AlreadyConnected
     }
 
-//    @Autowired
-//    private GuildCommandHandler guildCommandRegistry;
-//
-//    @Autowired
-//    private SlashCommandHandler slashCommandRegistry;
-
     @Autowired
     private CommandHandler commandHandler;
 
@@ -78,12 +72,6 @@ public class Main {
 
     @Autowired
     private ServerLeaveHandler serverLeaveHandler;
-
-//    public static GuildCommandRunner guildCommandRunner = new GuildCommandRunner();
-//
-//    public static SlashCommandRunner slashCommandRunner = new SlashCommandRunner();
-
-    public static CommandRegister commandRegister = new CommandRegister();
 
     /**
      * Constructor for the Main class
@@ -128,14 +116,8 @@ public class Main {
         api.addServerJoinListener(serverJoinHandler);
         api.addServerLeaveListener(serverLeaveHandler);
 
-//        // Guild Commands
-//        guildCommandRunner.run(api, guildCommandRegistry);
-//
-//        // Slash Commands
-//        slashCommandRunner.run(api, slashCommandRegistry);
-
         // Commands
-        commandRegister.run(api, commandHandler);
+        CommandRegister.run(api, commandHandler);
 
         // Self mention listener
         AuxiliaryListeners.selfMentionListener(api);

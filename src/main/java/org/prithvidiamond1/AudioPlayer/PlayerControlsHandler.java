@@ -15,14 +15,23 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
     private final AudioSourceHandler audioSourceHandler;
 
     public final static ActionRow playerActionRow = ActionRow.of(
+            Button.secondary("SkipToPreviousTrack", "Skip to previous track ⏮"),
             Button.danger("PlayPause", "Play/Pause ⏯"),
             Button.secondary("SkipToNextTrack", "Skip to next track ⏭")
     );
 
+    /**
+     * Simple constructor for initializing the PlayerControlsHandler
+     * @param audioSourceHandler the AudioSourceHandler of the active bot's AudioPlayer instance
+     */
     public PlayerControlsHandler(AudioSourceHandler audioSourceHandler) {
         this.audioSourceHandler = audioSourceHandler;
     }
 
+    /**
+     * Method that handles the play/pause button function of the bot's player
+     * @param componentInteraction the interaction from the button (Message Component)
+     */
     private void playPause(MessageComponentInteraction componentInteraction){
         componentInteraction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
             YoutubeSearchEngine youtube = new YoutubeSearchEngine();
@@ -31,7 +40,6 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
 
             boolean playerPaused = this.audioSourceHandler.playerAudioSource.audioPlayer.isPaused();
             if (playerPaused){
-//                        this.audioSourceHandler.audioSource.scheduler.onPlayerResume();
                 this.audioSourceHandler.playerAudioSource.audioPlayer.setPaused(false);
                 componentInteraction.createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
                                 .setTitle("Resumed Playback")
@@ -40,7 +48,6 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
                                 .setThumbnail(thumbnailUrl))
                         .addComponents(playerActionRow).send();
             } else{
-//                        this.audioSourceHandler.audioSource.scheduler.onPlayerPause();
                 this.audioSourceHandler.playerAudioSource.audioPlayer.setPaused(true);
                 componentInteraction.createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
                                 .setTitle("Playback Paused")
@@ -56,6 +63,10 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
         });
     }
 
+    /**
+     * Method that handles the skip forward button function of the bot's player
+     * @param componentInteraction the interaction from the button (Message Component)
+     */
     private void skipToNextTrack(MessageComponentInteraction componentInteraction){
         componentInteraction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
             AudioTrack nextTrack = this.audioSourceHandler.playerAudioSource.trackScheduler.getNextTrackInQueue();
@@ -86,18 +97,54 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
         });
     }
 
+    /**
+     * Method that handles the skip previous button function of the bot's player
+     * @param componentInteraction the interaction from the button (Message Component)
+     */
+    private void skipToPreviousTrack(MessageComponentInteraction componentInteraction){
+        componentInteraction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
+            AudioTrack nextTrack = this.audioSourceHandler.playerAudioSource.trackScheduler.getLastPlayedTrack();
+            if (nextTrack != null) {
+                componentInteraction.createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
+                        .setTitle("Skipping to previously played track")
+                        .setDescription(String.format("Playing %s", nextTrack.getInfo().title))
+                        .setColor(Main.botAccentColor)
+                        .setThumbnail(Main.botIconURL)
+                ).send().exceptionally(exception -> {
+                    Main.logger.error("Unable to respond to this interaction!");
+                    Main.logger.error(exception.getMessage());
+                    return null;
+                });
+                this.audioSourceHandler.playerAudioSource.trackScheduler.jump(nextTrack.makeClone());
+                this.audioSourceHandler.playerAudioSource.trackScheduler.nextTrack();
+            } else {
+                componentInteraction.createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
+                        .setTitle("No track previously played")
+                        .setDescription("Finish playing some tracks and then try skipping back to them")
+                        .setColor(Main.botAccentColor)
+                        .setThumbnail(Main.botIconURL)
+                ).send();
+            }
+        }).exceptionally(exception -> {
+            Main.logger.info("Unable to register skip to previous action!");
+            Main.logger.info(exception.getMessage());
+            return null;
+        });
+    }
+
+    /**
+     * Method that handles button events (Message Component event)
+     * @param event The event
+     */
     @Override
     public void onComponentCreate(MessageComponentCreateEvent event) {
         MessageComponentInteraction componentInteraction = event.getMessageComponentInteraction();
         String customId = componentInteraction.getCustomId();
 
-        switch (customId){
-            case "PlayPause":
-                playPause(componentInteraction);
-                break;
-            case "SkipToNextTrack":
-                skipToNextTrack(componentInteraction);
-                break;
+        switch (customId) {
+            case "PlayPause" -> playPause(componentInteraction);
+            case "SkipToNextTrack" -> skipToNextTrack(componentInteraction);
+            case "SkipToPreviousTrack" -> skipToPreviousTrack(componentInteraction);
         }
     }
 }

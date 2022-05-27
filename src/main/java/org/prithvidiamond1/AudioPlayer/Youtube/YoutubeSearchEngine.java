@@ -8,9 +8,15 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
+/**
+ * Class that implements methods for using the YouTube Search Engine API
+ */
 public class YoutubeSearchEngine {
     public YouTube youtube;
 
+    /**
+     * Constructor that initializes the search engine API service
+     */
     public YoutubeSearchEngine(){
         try {
             this.youtube = YoutubeSearchEngineInitializer.getService();
@@ -21,6 +27,11 @@ public class YoutubeSearchEngine {
         }
     }
 
+    /**
+     * Method that returns the best YouTube search result based on a search string
+     * @param searchString a user defined search string
+     * @return the best YouTube search result
+     */
     public SearchResult getBestSearchResult(String searchString){
         YouTube.Search.List searchRequest;
         SearchListResponse searchResponse = null;
@@ -40,6 +51,11 @@ public class YoutubeSearchEngine {
         return searchResponse.getItems().get(0);
     }
 
+    /**
+     * Method that gets a YouTube video snippet based on its video ID
+     * @param videoId the YouTube video's ID
+     * @return a video snippet of the YouTube video
+     */
     public VideoSnippet getVideoSnippetById(String videoId){
         YouTube.Videos.List request;
         VideoListResponse response = null;

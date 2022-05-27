@@ -5,12 +5,20 @@ import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandOptionChoice;
 import org.javacord.api.interaction.SlashCommandOptionType;
 import org.prithvidiamond1.Commands.*;
-import org.prithvidiamond1.SlashCommands.Customizers.SlashCommandCustomizer;
+import org.prithvidiamond1.SlashCommandCustomizers.SlashCommandCustomizer;
 
 import java.util.List;
 
+/**
+ * Class that contains methods for registering and running bot commands
+ */
 public class CommandRegister {
-    public void run(DiscordApi api, CommandHandler commandHandler){
+    /**
+     * Method that runs the bot commands
+     * @param api the discord api instance
+     * @param commandHandler the command handler instance i.e. the implementation of a command listener
+     */
+    public static void run(DiscordApi api, CommandHandler commandHandler){
         commandHandler.registerCommand("ping",
                         "A command that will make the bot greet you!",
                         new PingCommand())

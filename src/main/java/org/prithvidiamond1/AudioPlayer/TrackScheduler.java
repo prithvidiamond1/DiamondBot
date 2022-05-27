@@ -6,7 +6,6 @@ import com.sedmelluq.discord.lavaplayer.player.event.*;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.MessageBuilder;
@@ -23,13 +22,13 @@ public class TrackScheduler implements AudioEventListener {
     private ServerVoiceChannel serverVoiceChannel;
     private ScheduledExecutorService scheduledExecutorService;
 
-    private final BlockingQueue<AudioTrack> trackQueue;
+    private final BlockingDeque<AudioTrack> trackQueue;
 
     public final AudioPlayer audioPlayer;
 
     public TrackScheduler(TextChannel textChannel, ServerVoiceChannel serverVoiceChannel, AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
-        this.trackQueue = new LinkedBlockingQueue<>(100);
+        this.trackQueue = new LinkedBlockingDeque<>(100);
         this.textChannel = textChannel;
         this.serverVoiceChannel = serverVoiceChannel;
         this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
@@ -47,12 +46,33 @@ public class TrackScheduler implements AudioEventListener {
         this.audioPlayer.startTrack(this.trackQueue.poll(), false);
     }
 
+    public AudioTrack getLastPlayedTrack(){
+        return this.lastPlayedTrack;
+    }
+
+    /**
+     * Method that adds a track to the back of the deque (normal queuing)
+     * @param track the AudioTrack to be added
+     */
     public void queue(AudioTrack track){
         boolean addedToQueue = false;
         if(!this.audioPlayer.startTrack(track, true)){
             addedToQueue = this.trackQueue.offer(track);
         }
         Main.logger.info(String.format("Track successfully added to queue: %b", addedToQueue));
+        Main.logger.info(String.format("Queue size: %d", this.trackQueue.size()));
+    }
+
+    /**
+     * Method that adds a track to the front of the deque (jumps the queue)
+     * @param track the AudioTrack to be added
+     */
+    public void jump(AudioTrack track){
+        boolean addedToQueue = false;
+        if(!this.audioPlayer.startTrack(track, true)){
+            addedToQueue = this.trackQueue.offerFirst(track);
+        }
+        Main.logger.info(String.format("Track successfully jumped the queue: %b", addedToQueue));
         Main.logger.info(String.format("Queue size: %d", this.trackQueue.size()));
     }
 
@@ -83,8 +103,6 @@ public class TrackScheduler implements AudioEventListener {
     }
 
     private void onTrackStart(AudioTrack track) {
-        this.lastPlayedTrack = track;
-
         YoutubeSearchEngine youtube = new YoutubeSearchEngine();
         VideoSnippet video = youtube.getVideoSnippetById(track.getIdentifier());
         String thumbnailUrl = video.getThumbnails().getStandard().getUrl();
@@ -106,6 +124,8 @@ public class TrackScheduler implements AudioEventListener {
     }
 
     private void onTrackEnd(AudioTrack track, AudioTrackEndReason endReason) {
+        this.lastPlayedTrack = track;
+
         if(endReason.mayStartNext){
             nextTrack();
         }

@@ -87,13 +87,13 @@ public class PlayCommand implements Command {
         if (voiceConnectionStatusState.equals(Main.VoiceConnectionStatus.Successful)){
             response = new EmbedBuilder()
                     .setTitle(String.format("Joining Voice Channel - %s", this.serverVoiceChannel.getName()))
-                    .setDescription("If you need me to join a different voice channel, join the voice channel before calling the play command")
+                    .setDescription("If you need me to join a different voice channel, join the voice channel before using the play command")
                     .setThumbnail(Main.botIconURL)
                     .setColor(Main.botAccentColor);
         } else if (voiceConnectionStatusState.equals(Main.VoiceConnectionStatus.AlreadyConnected)) {
             response = new EmbedBuilder()
                     .setTitle(String.format("Already connected to Channel - %s", this.serverVoiceChannel.getName()))
-                    .setDescription("If you need me to join a different voice channel, join the voice channel before calling the play command")
+                    .setDescription("If you need me to join a different voice channel, join the voice channel before using the play command")
                     .setThumbnail(Main.botIconURL)
                     .setColor(Main.botAccentColor);
         }
