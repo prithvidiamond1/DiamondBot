@@ -1,5 +1,6 @@
 package org.prithvidiamond1.AudioPlayer;
 
+import com.google.api.services.youtube.model.Thumbnail;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.*;
@@ -13,7 +14,10 @@ import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.prithvidiamond1.AudioPlayer.Youtube.YoutubeSearchEngine;
 import org.prithvidiamond1.Main;
 
+import java.util.Iterator;
 import java.util.concurrent.*;
+
+import static org.prithvidiamond1.CommandFunctions.getYoutubeVideoUrl;
 
 public class TrackScheduler implements AudioEventListener {
 
@@ -76,6 +80,14 @@ public class TrackScheduler implements AudioEventListener {
         Main.logger.info(String.format("Queue size: %d", this.trackQueue.size()));
     }
 
+    /**
+     * Method that gets all the tracks in the queue in the form an iterator
+     * @return an iterator to iter through the tracks in the queue.=
+     */
+    public Iterator<AudioTrack> getTracksInQueue(){
+        return this.trackQueue.iterator();
+    }
+
     private Runnable botDisconnect(){
         return () -> this.serverVoiceChannel.disconnect()
                         .exceptionally(exception -> {
@@ -105,7 +117,7 @@ public class TrackScheduler implements AudioEventListener {
     private void onTrackStart(AudioTrack track) {
         YoutubeSearchEngine youtube = new YoutubeSearchEngine();
         VideoSnippet video = youtube.getVideoSnippetById(track.getIdentifier());
-        String thumbnailUrl = video.getThumbnails().getStandard().getUrl();
+        String thumbnailUrl = getYoutubeVideoUrl(video);
 
         EmbedBuilder embed = new EmbedBuilder()
                 .setTitle("Playing")

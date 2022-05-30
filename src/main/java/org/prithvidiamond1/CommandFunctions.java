@@ -1,5 +1,8 @@
 package org.prithvidiamond1;
 
+import com.google.api.services.youtube.model.Thumbnail;
+import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoSnippet;
 import org.testng.internal.collections.Pair;
 
 /**
@@ -30,5 +33,19 @@ public class CommandFunctions {
      */
     public static int randomRate(){
         return (int)(Math.random()*100+1);
+    }
+
+    public static String getYoutubeVideoUrl(VideoSnippet video){
+        Thumbnail thumbnail = video.getThumbnails().getStandard();
+        String thumbnailUrl = "https://i.imgur.com/OkGXI5L.png"; // replacement image.
+        if (thumbnail != null){
+            thumbnailUrl = thumbnail.getUrl();
+        } else {
+            thumbnail = video.getThumbnails().getDefault();
+            if (thumbnail != null){
+                thumbnailUrl = thumbnail.getUrl();
+            }
+        }
+        return thumbnailUrl;
     }
 }

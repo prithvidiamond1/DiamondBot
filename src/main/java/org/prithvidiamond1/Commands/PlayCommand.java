@@ -30,6 +30,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.prithvidiamond1.AudioPlayer.PlayerControlsHandler.playerActionRow;
+
 public class PlayCommand implements Command {
 
     private ServerVoiceChannel serverVoiceChannel;
@@ -184,9 +186,9 @@ public class PlayCommand implements Command {
                         String embedDescription;
                         int queueSize = this.audioSourceHandler.playerAudioSource.trackScheduler.getQueueSize();
                         if (queueSize == 1) {
-                            embedDescription = String.format("Currently %d track in queue\n Click the button below to see the full queue", queueSize);
+                            embedDescription = String.format("Currently %d track in queue\n To view the full queue, click the **View Full Track Queue** button", queueSize);
                         } else {
-                            embedDescription = String.format("Currently %d tracks in queue\n Click the button below to see the full queue", queueSize);
+                            embedDescription = String.format("Currently %d tracks in queue\n To view the full queue, click the **View Full Track Queue** button", queueSize);
                         }
                          functionResponse = new EmbedBuilder()
                                         .setTitle(String.format("Added to Queue - %s", newTrack.getInfo().title))
