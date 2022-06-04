@@ -2,6 +2,7 @@
 # ignored directories
 .idea
 .gradle
+/misc/secrets
 
 # Compiled class file
 *.class
