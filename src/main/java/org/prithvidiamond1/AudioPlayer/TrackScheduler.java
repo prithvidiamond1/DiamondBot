@@ -1,6 +1,5 @@
 package org.prithvidiamond1.AudioPlayer;
 
-import com.google.api.services.youtube.model.Thumbnail;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.*;
@@ -22,8 +21,8 @@ import static org.prithvidiamond1.CommandFunctions.getYoutubeVideoUrl;
 public class TrackScheduler implements AudioEventListener {
 
     private AudioTrack lastPlayedTrack;
-    private TextChannel textChannel;
-    private ServerVoiceChannel serverVoiceChannel;
+    private final TextChannel textChannel;
+    private final ServerVoiceChannel serverVoiceChannel;
     private ScheduledExecutorService scheduledExecutorService;
 
     private final BlockingDeque<AudioTrack> trackQueue;
@@ -65,6 +64,22 @@ public class TrackScheduler implements AudioEventListener {
         }
         Main.logger.info(String.format("Track successfully added to queue: %b", addedToQueue));
         Main.logger.info(String.format("Queue size: %d", this.trackQueue.size()));
+
+        String embedDescription;
+        int queueSize = this.getQueueSize();
+        if (queueSize == 1) {
+            embedDescription = String.format("Currently %d track in queue\n To view the full queue, click the **View Full Track Queue** button", queueSize);
+        } else {
+            embedDescription = String.format("Currently %d tracks in queue\n To view the full queue, click the **View Full Track Queue** button", queueSize);
+        }
+        EmbedBuilder embed = new EmbedBuilder()
+                .setTitle(String.format("Added to Queue - %s", track.getInfo().title))
+                .setDescription(embedDescription)
+                .setColor(Main.botAccentColor)
+                .setThumbnail(Main.botIconURL);
+
+        this.sendMessageEmbed(embed);
+
     }
 
     /**
@@ -97,7 +112,18 @@ public class TrackScheduler implements AudioEventListener {
                         });
     }
 
-    private void onPlayerPause() {
+    private void sendMessageEmbed (EmbedBuilder embed){
+        new MessageBuilder().addEmbed(embed)
+                .addComponents(PlayerControlsHandler.playerActionRow)
+                .send(this.textChannel)
+                .exceptionally(exception -> {
+                    Main.logger.error("Error trying to send embed!");
+                    Main.logger.error(exception.getMessage());
+                    return null;
+                });
+    }
+
+    private void botDisconnectTimerStartSequence(){
         Runnable task = botDisconnect();
         if (this.scheduledExecutorService.isShutdown()){
             this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
@@ -105,7 +131,7 @@ public class TrackScheduler implements AudioEventListener {
         this.scheduledExecutorService.schedule(task, 1, TimeUnit.MINUTES);
     }
 
-    private void onPlayerResume() {
+    private void botDisconnectTimerPauseSequence(){
         this.scheduledExecutorService.shutdownNow();
         if (this.scheduledExecutorService.isShutdown()){
             Main.logger.info("The bot disconnect scheduler has been shutdown intermittently and can be reset now");
@@ -114,7 +140,17 @@ public class TrackScheduler implements AudioEventListener {
         }
     }
 
+    private void onPlayerPause() {
+        botDisconnectTimerStartSequence();
+    }
+
+    private void onPlayerResume() {
+        botDisconnectTimerPauseSequence();
+    }
+
     private void onTrackStart(AudioTrack track) {
+        botDisconnectTimerPauseSequence();
+
         YoutubeSearchEngine youtube = new YoutubeSearchEngine();
         VideoSnippet video = youtube.getVideoSnippetById(track.getIdentifier());
         String thumbnailUrl = getYoutubeVideoUrl(video);
@@ -125,14 +161,7 @@ public class TrackScheduler implements AudioEventListener {
                 .setColor(Main.botAccentColor)
                 .setThumbnail(thumbnailUrl);
 
-        new MessageBuilder().addEmbed(embed)
-                .addComponents(PlayerControlsHandler.playerActionRow)
-                .send(this.textChannel)
-                .exceptionally(exception -> {
-                    Main.logger.error("Error trying to send embed!");
-                    Main.logger.error(exception.getMessage());
-                    return null;
-                });
+        this.sendMessageEmbed(embed);
     }
 
     private void onTrackEnd(AudioTrack track, AudioTrackEndReason endReason) {
@@ -145,12 +174,7 @@ public class TrackScheduler implements AudioEventListener {
         boolean isPlayingTrackNull = this.audioPlayer.getPlayingTrack() == null;
         Main.logger.info(String.format("Is Playing Track Null: %b", isPlayingTrackNull));
         if (getQueueSize() == 0 && isPlayingTrackNull){
-            this.serverVoiceChannel.disconnect()
-                    .exceptionally(exception -> {
-                        Main.logger.error("An error occurred when trying to disconnect from a voice channel");
-                        Main.logger.error(exception.getMessage());
-                        return null;
-                    });
+            botDisconnectTimerStartSequence();
         }
     }
 

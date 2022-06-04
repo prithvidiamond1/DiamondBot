@@ -1,4 +1,8 @@
 
+# ignored directories
+.idea
+.gradle
+
 # Compiled class file
 *.class
 
@@ -15,16 +19,15 @@
 *.rar
 
 # Miscellaneous assets
-# Image assets
+# Image
 *.png
+*.psd
 
-# Default ignored files
-/shelf/
-/workspace.xml
-# Editor-based HTTP Client requests
-/httpRequests/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
+# TrueTypeFonts
+*.ttf
+
+# exceptions
+!gradle-wrapper.jar
+!gradle-wrapper.properties
 
 

@@ -100,6 +100,8 @@ public class PlayCommand implements Command {
                     .setColor(Main.botAccentColor);
         }
 
+
+
         result = new Pair<>(voiceConnectionStatusState, response);
 
         return result;
@@ -181,23 +183,23 @@ public class PlayCommand implements Command {
                                     .setThumbnail(Main.botIconURL);
                 } else {
                     if (newTrackItem instanceof AudioTrack newTrack) {
-                        this.audioSourceHandler.playerAudioSource.trackScheduler.queue(newTrack);
+                        functionResponse = new EmbedBuilder()
+                                .setTitle("Adding New Track to Queue")
+                                .setDescription(String.format("Adding Track to Queue - %s", newTrack.getInfo().title))
+                                .setColor(Main.botAccentColor)
+                                .setThumbnail(Main.botIconURL);
 
-                        String embedDescription;
-                        int queueSize = this.audioSourceHandler.playerAudioSource.trackScheduler.getQueueSize();
-                        if (queueSize == 1) {
-                            embedDescription = String.format("Currently %d track in queue\n To view the full queue, click the **View Full Track Queue** button", queueSize);
-                        } else {
-                            embedDescription = String.format("Currently %d tracks in queue\n To view the full queue, click the **View Full Track Queue** button", queueSize);
-                        }
-                         functionResponse = new EmbedBuilder()
-                                        .setTitle(String.format("Added to Queue - %s", newTrack.getInfo().title))
-                                        .setDescription(embedDescription)
-                                        .setColor(Main.botAccentColor)
-                                        .setThumbnail(Main.botIconURL);
+                        this.audioSourceHandler.playerAudioSource.trackScheduler.queue(newTrack);
                     }
                 }
             }
+        } else {
+            // Contact me
+            functionResponse = new EmbedBuilder()
+                    .setTitle("Uh oh! That wasn't supposed to happen!")
+                    .setDescription("If you are seeing this then something went wrong while trying to play your requested audio track. Try playing it again and if you see this message again, contact **Prithvi** if you know him personally and if not, send him an email at prithviraj645@gmail.com")
+                    .setColor(Main.botAccentColor)
+                    .setThumbnail(Main.botIconURL);
         }
 
         if (functionResponse == null){
@@ -223,6 +225,7 @@ public class PlayCommand implements Command {
                         event.getMessageAuthor().asUser().orElse(null),
                         event.getServer().orElse(null), source, searchString);
                 new MessageBuilder().addEmbed(response)
+                        .addComponents(playerActionRow)
                         .send(this.textChannel)
                         .exceptionally(exception -> {
                             Main.logger.error("Unable to respond to the guild command!");

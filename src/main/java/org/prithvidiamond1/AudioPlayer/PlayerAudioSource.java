@@ -12,8 +12,8 @@ import org.javacord.api.entity.channel.TextChannel;
 public class PlayerAudioSource extends AudioSourceBase {
 
     private AudioFrame lastFrame;
-    private TextChannel textChannel;
-    private ServerVoiceChannel serverVoiceChannel;
+    private final TextChannel textChannel;
+    private final ServerVoiceChannel serverVoiceChannel;
     private final AudioPlayerManager audioPlayerManager;
 
     public final AudioPlayer audioPlayer;

@@ -1,6 +1,5 @@
 package org.prithvidiamond1.AudioPlayer;
 
-import com.google.api.services.youtube.model.Thumbnail;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import org.javacord.api.entity.message.MessageBuilder;
