@@ -18,6 +18,9 @@ import java.util.concurrent.*;
 
 import static org.prithvidiamond1.CommandFunctions.getYoutubeVideoUrl;
 
+/**
+ * This class holds all the functions related to scheduling player tracks such as the track queue and player control functions
+ */
 public class TrackScheduler implements AudioEventListener {
 
     private AudioTrack lastPlayedTrack;
@@ -29,6 +32,12 @@ public class TrackScheduler implements AudioEventListener {
 
     public final AudioPlayer audioPlayer;
 
+    /**
+     * A simple constructor for the track scheduler
+     * @param textChannel the text channel in which the play command was invoked
+     * @param serverVoiceChannel the server in which the play command was invoked
+     * @param audioPlayer the audio player to be linked to this track scheduler
+     */
     public TrackScheduler(TextChannel textChannel, ServerVoiceChannel serverVoiceChannel, AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
         this.trackQueue = new LinkedBlockingDeque<>(100);
@@ -37,18 +46,33 @@ public class TrackScheduler implements AudioEventListener {
         this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
     }
 
+    /**
+     * Method that gets the current size of the queue
+     * @return the size of the queue
+     */
     public int getQueueSize(){
         return this.trackQueue.size();
     }
 
+    /**
+     * Method that gets the next track in the queue;
+     * @return the next track in the queue
+     */
     public AudioTrack getNextTrackInQueue(){
         return this.trackQueue.peek();
     }
 
+    /**
+     * Method that plays the next track in the queue
+     */
     public void nextTrack(){
         this.audioPlayer.startTrack(this.trackQueue.poll(), false);
     }
 
+    /**
+     * Method that gets the last played track
+     * @return the last played track
+     */
     public AudioTrack getLastPlayedTrack(){
         return this.lastPlayedTrack;
     }
@@ -103,6 +127,10 @@ public class TrackScheduler implements AudioEventListener {
         return this.trackQueue.iterator();
     }
 
+    /**
+     * Method that performs the disconnect function for the bot's {@link ScheduledExecutorService}
+     * @return a {@link Runnable} version of this function
+     */
     private Runnable botDisconnect(){
         return () -> this.serverVoiceChannel.disconnect()
                         .exceptionally(exception -> {
@@ -112,6 +140,10 @@ public class TrackScheduler implements AudioEventListener {
                         });
     }
 
+    /**
+     * Method that sends an embed as a message
+     * @param embed the embed ({@link EmbedBuilder})
+     */
     private void sendMessageEmbed (EmbedBuilder embed){
         new MessageBuilder().addEmbed(embed)
                 .addComponents(PlayerControlsHandler.playerActionRow)
@@ -123,6 +155,9 @@ public class TrackScheduler implements AudioEventListener {
                 });
     }
 
+    /**
+     * Method that starts the bot's disconnect sequence
+     */
     private void botDisconnectTimerStartSequence(){
         Runnable task = botDisconnect();
         if (this.scheduledExecutorService.isShutdown()){
@@ -131,6 +166,9 @@ public class TrackScheduler implements AudioEventListener {
         this.scheduledExecutorService.schedule(task, 1, TimeUnit.MINUTES);
     }
 
+    /**
+     * Method that pauses the bot's disconnect sequence
+     */
     private void botDisconnectTimerPauseSequence(){
         this.scheduledExecutorService.shutdownNow();
         if (this.scheduledExecutorService.isShutdown()){
@@ -140,14 +178,24 @@ public class TrackScheduler implements AudioEventListener {
         }
     }
 
+    /**
+     * Method that runs when the linked audio player is paused
+     */
     private void onPlayerPause() {
         botDisconnectTimerStartSequence();
     }
 
+    /**
+     * Method that runs when the linked audio player is resumed
+     */
     private void onPlayerResume() {
         botDisconnectTimerPauseSequence();
     }
 
+    /**
+     * Method that runs when an audio track starts to play
+     * @param track the audio track is starting to play
+     */
     private void onTrackStart(AudioTrack track) {
         botDisconnectTimerPauseSequence();
 
@@ -164,6 +212,11 @@ public class TrackScheduler implements AudioEventListener {
         this.sendMessageEmbed(embed);
     }
 
+    /**
+     * Method that runs when the audio track ends
+     * @param track the audio track is ending
+     * @param endReason the reason for the audio track to end
+     */
     private void onTrackEnd(AudioTrack track, AudioTrackEndReason endReason) {
         this.lastPlayedTrack = track;
 
@@ -178,11 +231,22 @@ public class TrackScheduler implements AudioEventListener {
         }
     }
 
+    /**
+     * Method that runs when an exception is encountered during playback
+     * @param track the associated audio track
+     * @param exception the exception that was encountered
+     */
     private void onTrackException(AudioTrack track, FriendlyException exception) {
         Main.logger.error(String.format("Error during playback of the following track '%s'", track.getIdentifier()));
         Main.logger.error(exception.getMessage());
     }
 
+    /**
+     * Method that runs when a track gets stuck in the audio player
+     * @param track the associated audio track
+     * @param thresholdMs the threshold time in milliseconds
+     * @param stackTrace the associated stack trace
+     */
     private void onTrackStuck(AudioTrack track, long thresholdMs, StackTraceElement[] stackTrace) {
         Main.logger.error(String.format("Error during playback of the following track '%s' at threshold '%d'",
                 track.getIdentifier(),
@@ -194,6 +258,10 @@ public class TrackScheduler implements AudioEventListener {
         Main.logger.error(errorMessage.toString());
     }
 
+    /**
+     * Method that runs when an {@link AudioEvent} occurs
+     * @param event The event
+     */
     @Override
     public void onEvent(AudioEvent event) {
         Main.logger.info(String.format("Event: %s", event.toString()));

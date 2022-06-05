@@ -10,7 +10,16 @@ import org.prithvidiamond1.Main;
 
 import static org.prithvidiamond1.ServerHelperFunctions.resolveServerModelById;
 
+/**
+ * This class contains the actions of the help command
+ * <br>
+ * Displays a description of all the available bot commands
+ */
 public class HelpCommand implements Command{
+    /**
+     * the guild version of the help command
+     * @param event the guild command trigger event
+     */
     @Override
     public void runCommand(MessageCreateEvent event) {
         event.getServer().ifPresent(server -> {
@@ -24,12 +33,15 @@ public class HelpCommand implements Command{
                     .exceptionally(exception -> {   // Error message for failing to respond to the guild command
                         Main.logger.error("Unable to respond to the guild command!");
                         Main.logger.error(exception.getMessage());
-//                      exception.printStackTrace();
                         return null;
                     });
         });
     }
 
+    /**
+     * the slash version of the help command
+     * @param event the slash command trigger event
+     */
     @Override
     public void runCommand(SlashCommandCreateEvent event) {
         SlashCommandInteraction slashCommandInteraction = event.getSlashCommandInteraction();
@@ -43,7 +55,6 @@ public class HelpCommand implements Command{
                         .exceptionally(exception -> {   // Error message for failing to respond to the slash command interaction
                             Main.logger.error("Unable to respond to the slash command interaction");
                             Main.logger.error(exception.getMessage());
-//                          exception.printStackTrace();
                             return null;
                         })
         );

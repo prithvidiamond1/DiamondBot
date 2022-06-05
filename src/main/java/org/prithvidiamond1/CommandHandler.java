@@ -17,11 +17,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.prithvidiamond1.ServerHelperFunctions.resolveServerModelById;
 
+/**
+ * Class that contains methods and fields for handling command calls
+ */
 @Component
 public class CommandHandler implements MessageCreateListener, SlashCommandCreateListener {
     private final Map<String, Command> commands = new ConcurrentHashMap<>();
     private static final Map<String, String> commandDescriptions = new ConcurrentHashMap<>();
 
+    /**
+     * Method to register a command
+     * @param name the name of the command
+     * @param description the description of the command
+     * @param command the command's instance
+     * @return a {@link SlashCommandBuilder} which can customized using the {@link org.prithvidiamond1.SlashCommandCustomizers}
+     */
     public SlashCommandBuilder registerCommand(String name,
                                                String description,
                                                Command command){
@@ -30,7 +40,10 @@ public class CommandHandler implements MessageCreateListener, SlashCommandCreate
         return SlashCommand.with(name, description);
     }
 
-
+    /**
+     * Method that runs a command as a slash command upon receiving its call
+     * @param event the slash command trigger event
+     */
     @Override
     public void onSlashCommandCreate(SlashCommandCreateEvent event) {
         SlashCommandInteraction slashCommandInteraction = event.getSlashCommandInteraction();
@@ -42,6 +55,10 @@ public class CommandHandler implements MessageCreateListener, SlashCommandCreate
         }
     }
 
+    /**
+     * Method that runs a command as a guild command upon receiving its call
+     * @param event the guild command trigger event
+     */
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
         String message = event.getMessageContent();
@@ -60,6 +77,11 @@ public class CommandHandler implements MessageCreateListener, SlashCommandCreate
         });
     }
 
+    /**
+     * Method that generates a help command description based on the descriptions given to each command
+     * @param commandPrefix the guild prefix for the commands
+     * @return a string that can be used as a help command embed description
+     */
     public static String generateHelpDescription(String commandPrefix){
         StringBuilder helpDescription = new StringBuilder();
         for (String commandName: commandDescriptions.keySet()){

@@ -13,8 +13,17 @@ import org.testng.internal.collections.Pair;
 
 import java.util.Optional;
 
+/**
+ * This class contains the actions of the gayrate command
+ * <br>
+ * Calculates how gay a person is using pseudo-RNG
+ */
 public class GayrateCommand implements Command{
 
+    /**
+     * the guild version of the gayrate command
+     * @param event the guild command trigger event
+     */
     @Override
     public void runCommand(MessageCreateEvent event) {
         Pair<String, Integer> gaynessAndRate = CommandFunctions.gayRate();
@@ -30,11 +39,14 @@ public class GayrateCommand implements Command{
                 .exceptionally(exception -> {   // Error message for failing to respond to the guild command
                     Main.logger.error("Unable to respond to the guild command!");
                     Main.logger.error(exception.getMessage());
-//                    exception.printStackTrace();
                     return null;
                 });
     }
 
+    /**
+     * the slash version of the gayrate command
+     * @param event the slash command trigger event
+     */
     @Override
     public void runCommand(SlashCommandCreateEvent event) {
         SlashCommandInteraction slashCommandInteraction = event.getSlashCommandInteraction();
@@ -54,7 +66,6 @@ public class GayrateCommand implements Command{
                         .exceptionally(exception -> {    // Error message for failing to respond to the slash command interaction
                             Main.logger.error("Unable to respond to the slash command interaction");
                             Main.logger.error(exception.getMessage());
-//                    exception.printStackTrace();
                             return null;
                         })
         );

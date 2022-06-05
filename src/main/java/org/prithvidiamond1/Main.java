@@ -58,18 +58,30 @@ public class Main {
      */
     public static DiscordServerRepository discordServerRepository = null;
 
+    /**
+     * Enumerations for the different voice channel connection states
+     */
     public enum VoiceConnectionStatus {
         Successful,
         Unsuccessful,
         AlreadyConnected
     }
 
+    /**
+     * The command handler instance
+     */
     @Autowired
     private CommandHandler commandHandler;
 
+    /**
+     * The server join handler instance
+     */
     @Autowired
     private ServerJoinHandler serverJoinHandler;
 
+    /**
+     * The server leave handler instance
+     */
     @Autowired
     private ServerLeaveHandler serverLeaveHandler;
 
@@ -97,7 +109,8 @@ public class Main {
                 .setWaitForServersOnStartup(true)
                 .setWaitForUsersOnStartup(true)
                 .login().exceptionally(exception -> {    // Error message for any failed actions from the above
-                    exception.printStackTrace();
+                    logger.error("Error setting up DiscordApi instance!");
+                    logger.error(exception.getMessage());
                     return null;
                 })
                 .join();

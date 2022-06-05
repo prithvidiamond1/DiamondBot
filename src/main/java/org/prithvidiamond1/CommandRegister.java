@@ -104,7 +104,7 @@ public class CommandRegister {
                 })
                 .join();
 
-
+        // Adding the command listeners
         api.addMessageCreateListener(commandHandler);
         api.addSlashCommandCreateListener(commandHandler);
     }

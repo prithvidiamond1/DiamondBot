@@ -32,6 +32,11 @@ import java.util.Optional;
 
 import static org.prithvidiamond1.AudioPlayer.PlayerControlsHandler.playerActionRow;
 
+/**
+ * This class contains the actions of the play command
+ * <br>
+ * Plays audio from a requested audio source
+ */
 public class PlayCommand implements Command {
 
     private ServerVoiceChannel serverVoiceChannel;
@@ -39,6 +44,13 @@ public class PlayCommand implements Command {
     private AudioSourceHandler audioSourceHandler;
     private YoutubeAudioSourceManager youtubeSourceManager;
 
+    /**
+     * Method that finds a suitable server voice channel to join to
+     * @param api the {@link DiscordApi} instance
+     * @param user the user calling the play command
+     * @param server the server in which the play command got invoked
+     * @return a {@link Pair} object containing a {@link org.prithvidiamond1.Main.VoiceConnectionStatus} and an {@link org.javacord.api.entity.message.embed.EmbedBuilder}
+     */
     private Pair<Main.VoiceConnectionStatus, EmbedBuilder> findVoiceChannel(DiscordApi api, User user, Server server){
         Pair<Main.VoiceConnectionStatus, EmbedBuilder> result;
         EmbedBuilder response = null;
@@ -107,6 +119,12 @@ public class PlayCommand implements Command {
         return result;
     }
 
+    /**
+     * Method that connects the bot to voice channel using an audio source
+     * @param voiceChannel the voice channel to connect to
+     * @param voiceConnectionStatus the status of the connection
+     * @param source the audio source
+     */
     private void connectToSource(ServerVoiceChannel voiceChannel, Main.VoiceConnectionStatus voiceConnectionStatus, AudioSource source) {
         if (voiceConnectionStatus.equals(Main.VoiceConnectionStatus.Successful)) {
             voiceChannel.connect()
@@ -119,6 +137,11 @@ public class PlayCommand implements Command {
         }
     }
 
+    /**
+     * Method to parse guild command arguments
+     * @param commandArgs the command arguments
+     * @return a list with all the parsed arguments
+     */
     private String parseCommandArgs(String[] commandArgs){
         StringBuilder searchString = new StringBuilder();
 
@@ -131,6 +154,11 @@ public class PlayCommand implements Command {
         return searchString.toString().strip().replaceAll("\"", "");
     }
 
+    /**
+     * Method to fetch a YouTube video's id by using search string
+     * @param searchString the search string
+     * @return the video's id as a string
+     */
     private String fetchYoutubeSourceById(String searchString){
         YoutubeSearchEngine youtubeSearch = new YoutubeSearchEngine();
         SearchResult topResult = youtubeSearch.getBestSearchResult(searchString);
@@ -138,6 +166,15 @@ public class PlayCommand implements Command {
 
     }
 
+    /**
+     * Method that does the core function of the play command
+     * @param api the {@link DiscordApi} instance
+     * @param user the user that called the play command
+     * @param server the server in which the play command was invoked
+     * @param source the audio source to be played
+     * @param searchString the search string associated with the audio source
+     * @return an {@link EmbedBuilder} which is the response from this action
+     */
     private EmbedBuilder commandFunction(DiscordApi api, User user, Server server, String source, String searchString){
         EmbedBuilder functionResponse = null;
 
@@ -209,6 +246,10 @@ public class PlayCommand implements Command {
         return functionResponse;
     }
 
+    /**
+     * the guild version of the play command
+     * @param event the guild command trigger event
+     */
     @Override
     public void runCommand(MessageCreateEvent event) {
         this.textChannel = event.getChannel();
@@ -236,6 +277,10 @@ public class PlayCommand implements Command {
         }
     }
 
+    /**
+     * the slash version of the play command
+     * @param event the slash command trigger event
+     */
     @Override
     public void runCommand(SlashCommandCreateEvent event) {
         SlashCommandInteraction slashCommandInteraction = event.getSlashCommandInteraction();

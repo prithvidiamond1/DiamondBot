@@ -17,6 +17,9 @@ import java.util.Iterator;
 
 import static org.prithvidiamond1.CommandFunctions.getYoutubeVideoUrl;
 
+/**
+ * This class contains methods and fields for handling the audio player controls from the user's end
+ */
 public class PlayerControlsHandler implements MessageComponentCreateListener {
     private final AudioSourceHandler audioSourceHandler;
 
@@ -37,7 +40,7 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
 
     /**
      * Method that handles the play/pause button function of the bot's player
-     * @param componentInteraction the interaction from the button (Message Component)
+     * @param componentInteraction the interaction from the button ({@link MessageComponentInteraction})
      */
     private void playPause(MessageComponentInteraction componentInteraction){
         componentInteraction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
@@ -82,7 +85,7 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
 
     /**
      * Method that handles the skip forward button function of the bot's player
-     * @param componentInteraction the interaction from the button (Message Component)
+     * @param componentInteraction the interaction from the button ({@link MessageComponentInteraction})
      */
     private void skipToNextTrack(MessageComponentInteraction componentInteraction){
         componentInteraction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
@@ -120,7 +123,7 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
 
     /**
      * Method that handles the skip previous button function of the bot's player
-     * @param componentInteraction the interaction from the button (Message Component)
+     * @param componentInteraction the interaction from the button ({@link MessageComponentInteraction})
      */
     private void skipToPreviousTrack(MessageComponentInteraction componentInteraction){
         componentInteraction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
@@ -157,6 +160,10 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
         });
     }
 
+    /**
+     * Method that handles the view full track queue button function of the bot's player
+     * @param componentInteraction the interaction from the button ({@link MessageComponentInteraction})
+     */
     public void viewFullTrackQueue(MessageComponentInteraction componentInteraction){
         Iterator<AudioTrack> iter = this.audioSourceHandler.playerAudioSource.trackScheduler.getTracksInQueue();
         ArrayList<String> embedDescriptions = new ArrayList<>();
@@ -238,8 +245,8 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
     }
 
     /**
-     * Method that handles button events (Message Component event)
-     * @param event The event
+     * Method that handles button events ({@link MessageComponentCreateEvent})
+     * @param event The message component trigger event
      */
     @Override
     public void onComponentCreate(MessageComponentCreateEvent event) {

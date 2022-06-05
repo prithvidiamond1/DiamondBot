@@ -12,7 +12,16 @@ import org.prithvidiamond1.Main;
 
 import java.util.Optional;
 
+/**
+ * This class contains the actions of the simprate command
+ * <br>
+ * Calculates how much of a simp a person is using pseudo-RNG
+ */
 public class SimprateCommand implements Command{
+    /**
+     * the guild version of the simprate command
+     * @param event the guild command trigger event
+     */
     @Override
     public void runCommand(MessageCreateEvent event) {
         int rate = CommandFunctions.randomRate();
@@ -25,11 +34,14 @@ public class SimprateCommand implements Command{
                 .exceptionally(exception -> {   // Error message for failing to respond to the guild command
                     Main.logger.error("Unable to respond to the guild command!");
                     Main.logger.error(exception.getMessage());
-//                    exception.printStackTrace();
                     return null;
                 });
     }
 
+    /**
+     * the slash version of the simprate command
+     * @param event the slash command trigger event
+     */
     @Override
     public void runCommand(SlashCommandCreateEvent event) {
         SlashCommandInteraction slashCommandInteraction = event.getSlashCommandInteraction();
@@ -44,7 +56,8 @@ public class SimprateCommand implements Command{
                         .setColor(Main.botAccentColor))
                 .respond()
                 .exceptionally(exception -> {   // Error message for failing to respond to the slash command
-                    exception.printStackTrace();
+                    Main.logger.error("Unable to respond to the slash command!");
+                    Main.logger.error(exception.getMessage());
                     return null;
                 })
         );

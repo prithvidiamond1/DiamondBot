@@ -14,8 +14,19 @@ import org.prithvidiamond1.Main;
 
 import static org.prithvidiamond1.ServerHelperFunctions.resolveServerModelById;
 
+/**
+ * This class contains the actions of the prefix command
+ * <br>
+ * Allows the user to change the guild prefix of the bot within the server
+ */
 public class PrefixCommand implements Command{
-
+    /**
+     * Method that does the core function of the prefix command
+     * @param user the user calling the play command
+     * @param server the server in which the play command was invoked
+     * @param validatedPrefix a valid prefix that can be used to replace the current prefix for the server
+     * @return an embed ({@link EmbedBuilder}) that can be used to notify the status of the command's actions after being called
+     */
     private EmbedBuilder commandFunction(User user, Server server, String validatedPrefix){
         EmbedBuilder response;
         if (!user.isBot() && server.isAdmin(user)) {
@@ -36,6 +47,10 @@ public class PrefixCommand implements Command{
         return response;
     }
 
+    /**
+     * the guild version of the prefix command
+     * @param event the guild command trigger event
+     */
     @Override
     public void runCommand(MessageCreateEvent event) {
         User author;
@@ -75,7 +90,6 @@ public class PrefixCommand implements Command{
                     .exceptionally(exception -> {   // Error message for failing to respond to the guild command
                         Main.logger.error("Unable to respond to the guild command!");
                         Main.logger.error(exception.getMessage());
-//                        exception.printStackTrace();
                         return null;
                     });
         } else{
@@ -90,7 +104,6 @@ public class PrefixCommand implements Command{
                         .exceptionally(exception -> {   // Error message for failing to respond to the guild command
                             Main.logger.error("Unable to respond to the guild command!");
                             Main.logger.error(exception.getMessage());
-//                            exception.printStackTrace();
                             return null;
                         });
             } else {
@@ -100,13 +113,16 @@ public class PrefixCommand implements Command{
                         .exceptionally(exception -> { // Error message for failing to respond to the guild command
                             Main.logger.error("Unable to respond to the guild command!");
                             Main.logger.error(exception.getMessage());
-//                                exception.printStackTrace();
                             return null;
                         });
             }
         }
     }
 
+    /**
+     * the slash version of the prefix command
+     * @param event the slash command trigger event
+     */
     @Override
     public void runCommand(SlashCommandCreateEvent event) {
         SlashCommandInteraction slashCommandInteraction = event.getSlashCommandInteraction();
@@ -120,7 +136,6 @@ public class PrefixCommand implements Command{
                                     .exceptionally(exception -> {   // Error message for failing to respond to the slash command interaction
                                         Main.logger.error("Unable to respond to the slash command interaction");
                                         Main.logger.error(exception.getMessage());
-//                                      exception.printStackTrace();
                                         return null;
                                     });
         }));

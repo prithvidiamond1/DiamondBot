@@ -9,6 +9,9 @@ import org.javacord.api.audio.AudioSourceBase;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
 import org.javacord.api.entity.channel.TextChannel;
 
+/**
+ * This class holds functions related to a player's audio source
+ */
 public class PlayerAudioSource extends AudioSourceBase {
 
     private AudioFrame lastFrame;
@@ -35,6 +38,10 @@ public class PlayerAudioSource extends AudioSourceBase {
         this.audioPlayer = this.trackScheduler.audioPlayer;
     }
 
+    /**
+     * Method that gets the next frame in the audio source
+     * @return a byte array
+     */
     @Override
     public byte[] getNextFrame() {
         if (this.lastFrame == null){
@@ -43,17 +50,29 @@ public class PlayerAudioSource extends AudioSourceBase {
         return applyTransformers(this.lastFrame.getData());
     }
 
+    /**
+     * Method that checks if an audio source has finished
+     * @return a boolean (although this implementation defaults to false all the time)
+     */
     @Override
     public boolean hasFinished(){
         return false;
     }
 
+    /**
+     * Method that checks if an audio source has another frame ahead
+     * @return a boolean
+     */
     @Override
     public boolean hasNextFrame() {
         this.lastFrame = this.trackScheduler.audioPlayer.provide();
         return lastFrame != null;
     }
 
+    /**
+     * Method that returns a copy of the current audio source
+     * @return an audio source copy
+     */
     @Override
     public AudioSource copy() {
         return new PlayerAudioSource(getApi(), this.textChannel, this.serverVoiceChannel, this.audioPlayerManager);
