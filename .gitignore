@@ -3,6 +3,7 @@
 .idea
 .gradle
 /misc/secrets
+/docs
 
 # Compiled class file
 *.class

@@ -35,6 +35,15 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.6.7'
 }
 
+
+javadoc{
+    if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_1_9)) {
+        (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
+    }
+    options.encoding("UTF-8")
+    destinationDir(new File("$rootDir/docs"))
+}
+
 test {
     useJUnitPlatform()
 }
