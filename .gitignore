@@ -3,7 +3,6 @@
 .idea
 .gradle
 /misc/secrets
-/docs
 
 # Compiled class file
 *.class
@@ -31,5 +30,6 @@
 # exceptions
 !gradle-wrapper.jar
 !gradle-wrapper.properties
+!DiscordBot-1.0-SNAPSHOT.jar
 
 
