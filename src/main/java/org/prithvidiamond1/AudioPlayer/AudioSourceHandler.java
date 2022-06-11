@@ -10,6 +10,9 @@ import org.prithvidiamond1.Main;
  * Class that handles the player source and its related functions such track and playlist loading.
  */
 public class AudioSourceHandler implements AudioLoadResultHandler {
+    /**
+     * The audio source to which the audio player is connected to
+     */
     public final PlayerAudioSource playerAudioSource;
 
     /**

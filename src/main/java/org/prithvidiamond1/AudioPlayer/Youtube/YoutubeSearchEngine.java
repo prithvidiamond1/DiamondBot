@@ -12,6 +12,9 @@ import java.util.List;
  * Class that implements methods for using the YouTube Search Engine API
  */
 public class YoutubeSearchEngine {
+    /**
+     * The YouTube service API instance
+     */
     public YouTube youtube;
 
     /**

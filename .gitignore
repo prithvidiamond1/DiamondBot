@@ -27,9 +27,12 @@
 # TrueTypeFonts
 *.ttf
 
+# hardcoded ignores
+previous-compilation-data.bin
+
 # exceptions
 !gradle-wrapper.jar
 !gradle-wrapper.properties
-!DiscordBot-1.0-SNAPSHOT.jar
+!DiscordBot.jar
 
 

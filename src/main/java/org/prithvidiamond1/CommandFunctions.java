@@ -34,6 +34,11 @@ public class CommandFunctions {
         return (int)(Math.random()*100+1);
     }
 
+    /**
+     * Gets the url of a YouTube video snippet {@link VideoSnippet}
+     * @param video the video snippet
+     * @return a string containing the url of the YouTube video
+     */
     public static String getYoutubeVideoUrl(VideoSnippet video){
         Thumbnail thumbnail = video.getThumbnails().getStandard();
         String thumbnailUrl = "https://i.imgur.com/OkGXI5L.png"; // replacement image.

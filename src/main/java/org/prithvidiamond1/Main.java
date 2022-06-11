@@ -46,6 +46,9 @@ public class Main {
             "soundcloud"
     };
 
+    /**
+     * The YouTube API key
+     */
     public static String youtubeApiKey = System.getenv().get("YT_API_KEY");
 
     /**
@@ -62,8 +65,17 @@ public class Main {
      * Enumerations for the different voice channel connection states
      */
     public enum VoiceConnectionStatus {
+        /**
+         * State for successful audio connection
+         */
         Successful,
+        /**
+         * State for unsuccessful audio connection
+         */
         Unsuccessful,
+        /**
+         * State for a pre-existing audio connection
+         */
         AlreadyConnected
     }
 

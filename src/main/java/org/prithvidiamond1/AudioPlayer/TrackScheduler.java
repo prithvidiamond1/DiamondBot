@@ -30,6 +30,9 @@ public class TrackScheduler implements AudioEventListener {
 
     private final BlockingDeque<AudioTrack> trackQueue;
 
+    /**
+     * The audio player instance that connects with the {@link TrackScheduler}
+     */
     public final AudioPlayer audioPlayer;
 
     /**
@@ -70,6 +73,13 @@ public class TrackScheduler implements AudioEventListener {
     }
 
     /**
+     * Method that clears the track queue
+     */
+    public void clearTrackQueue(){
+        this.trackQueue.clear();
+    }
+
+    /**
      * Method that gets the last played track
      * @return the last played track
      */
@@ -83,24 +93,36 @@ public class TrackScheduler implements AudioEventListener {
      */
     public void queue(AudioTrack track){
         boolean addedToQueue = false;
-        if(!this.audioPlayer.startTrack(track, true)){
-            addedToQueue = this.trackQueue.offer(track);
-        }
-        Main.logger.info(String.format("Track successfully added to queue: %b", addedToQueue));
-        Main.logger.info(String.format("Queue size: %d", this.trackQueue.size()));
 
         String embedDescription;
+        EmbedBuilder embed;
         int queueSize = this.getQueueSize();
-        if (queueSize == 1) {
-            embedDescription = String.format("Currently %d track in queue\n To view the full queue, click the **View Full Track Queue** button", queueSize);
+
+        if (queueSize == 100) {
+            embed = new EmbedBuilder()
+                    .setTitle("Track Queue Full")
+                    .setDescription("You have already added 100 tracks to the queue which is the current maximum track queue size handled by this bot.\n Please wait for a song to finish playing or clear the queue using the **Clear Track Queue** button before adding another track to the queue")
+                    .setColor(Main.botAccentColor)
+                    .setThumbnail(Main.botIconURL);
         } else {
-            embedDescription = String.format("Currently %d tracks in queue\n To view the full queue, click the **View Full Track Queue** button", queueSize);
+            if (queueSize == 1) {
+                embedDescription = String.format("Currently %d track in queue\n To view the full queue, click the **View Full Track Queue** button", queueSize);
+            } else {
+                embedDescription = String.format("Currently %d tracks in queue\n To view the full queue, click the **View Full Track Queue** button", queueSize);
+            }
+            embed = new EmbedBuilder()
+                    .setTitle(String.format("Added to Queue - %s", track.getInfo().title))
+                    .setDescription(embedDescription)
+                    .setColor(Main.botAccentColor)
+                    .setThumbnail(Main.botIconURL);
+
+            if (!this.audioPlayer.startTrack(track, true)) {
+                addedToQueue = this.trackQueue.offer(track);
+            }
         }
-        EmbedBuilder embed = new EmbedBuilder()
-                .setTitle(String.format("Added to Queue - %s", track.getInfo().title))
-                .setDescription(embedDescription)
-                .setColor(Main.botAccentColor)
-                .setThumbnail(Main.botIconURL);
+
+        Main.logger.info(String.format("Track successfully added to queue: %b", addedToQueue));
+        Main.logger.info(String.format("Queue size: %d", this.trackQueue.size()));
 
         this.sendMessageEmbed(embed);
 

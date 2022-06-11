@@ -19,8 +19,8 @@ public class YoutubeSearchEngineInitializer {
      * Build and return an authorized API client service.
      *
      * @return an authorized API client service
-     * @throws GeneralSecurityException
-     * @throws IOException
+     * @throws GeneralSecurityException A general type safety enforcing exception
+     * @throws IOException an input output exception
      */
     public static YouTube getService() throws GeneralSecurityException, IOException {
         final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();

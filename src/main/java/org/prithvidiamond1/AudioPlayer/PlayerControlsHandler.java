@@ -23,11 +23,15 @@ import static org.prithvidiamond1.CommandFunctions.getYoutubeVideoUrl;
 public class PlayerControlsHandler implements MessageComponentCreateListener {
     private final AudioSourceHandler audioSourceHandler;
 
+    /**
+     * The {@link ActionRow} that contains the audio player control buttons
+     */
     public final static ActionRow playerActionRow = ActionRow.of(
             Button.secondary("SkipToPreviousTrack", "Skip to previous track ⏮"),
             Button.danger("PlayPause", "Play/Pause ⏯"),
             Button.secondary("SkipToNextTrack", "Skip to next track ⏭"),
-            Button.primary("ViewFullTrackQueue", "View Full Track Queue")
+            Button.primary("ViewFullTrackQueue", "View Full Track Queue"),
+            Button.danger("ClearTrackQueue", "Clear Track Queue")
     );
 
     /**
@@ -107,7 +111,9 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
                         .setTitle("No tracks currently in queue to skip forward to")
                         .setDescription("Add some tracks to the queue and then try skipping forward to them")
                         .setColor(Main.botAccentColor)
-                        .setThumbnail(Main.botIconURL)).send()
+                        .setThumbnail(Main.botIconURL))
+                        .addComponents(playerActionRow)
+                        .send()
                         .exceptionally(exception -> {
                             Main.logger.error("Unable to respond to this interaction!");
                             Main.logger.error(exception.getMessage());
@@ -146,7 +152,9 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
                         .setTitle("No track previously played")
                         .setDescription("Finish playing some tracks and then try skipping back to them")
                         .setColor(Main.botAccentColor)
-                        .setThumbnail(Main.botIconURL)).send()
+                        .setThumbnail(Main.botIconURL))
+                        .addComponents(playerActionRow)
+                        .send()
                         .exceptionally(exception -> {
                             Main.logger.error("Unable to respond to this interaction!");
                             Main.logger.error(exception.getMessage());
@@ -245,6 +253,29 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
     }
 
     /**
+     * Method that handles the clear track queue button function of the bot's player
+     * @param componentInteraction the interaction from the button ({@link MessageComponentInteraction})
+     */
+    public void clearTrackQueue(MessageComponentInteraction componentInteraction){
+        componentInteraction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
+           this.audioSourceHandler.playerAudioSource.trackScheduler.clearTrackQueue();
+           componentInteraction.createFollowupMessageBuilder().addEmbed(
+                   new EmbedBuilder()
+                           .setTitle("Cleared Track Queue")
+                           .setDescription("Currently 0 tracks in queue")
+                           .setColor(Main.botAccentColor)
+                           .setThumbnail(Main.botIconURL))
+                   .addComponents(playerActionRow)
+                   .send()
+                   .exceptionally(exception -> {
+                       Main.logger.info("Unable to register clear track queue action!");
+                       Main.logger.info(exception.getMessage());
+                       return null;
+                   });
+        });
+    }
+
+    /**
      * Method that handles button events ({@link MessageComponentCreateEvent})
      * @param event The message component trigger event
      */
@@ -258,6 +289,7 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
             case "SkipToNextTrack" -> skipToNextTrack(componentInteraction);
             case "SkipToPreviousTrack" -> skipToPreviousTrack(componentInteraction);
             case "ViewFullTrackQueue" -> viewFullTrackQueue(componentInteraction);
+            case "ClearTrackQueue" -> clearTrackQueue(componentInteraction);
         }
     }
 }

@@ -19,7 +19,14 @@ public class PlayerAudioSource extends AudioSourceBase {
     private final ServerVoiceChannel serverVoiceChannel;
     private final AudioPlayerManager audioPlayerManager;
 
+    /**
+     * The audio player instance
+     */
     public final AudioPlayer audioPlayer;
+
+    /**
+     * The track scheduler instance that connects to the {@link AudioPlayer}
+     */
     public final TrackScheduler trackScheduler;
 
     /**
@@ -27,6 +34,8 @@ public class PlayerAudioSource extends AudioSourceBase {
      *
      * @param api The discord api instance.
      * @param audioPlayerManager the audio player manager
+     * @param serverVoiceChannel the server voice channel to which the bot connected to
+     * @param textChannel the text channel in which the play command was invoked
      */
     public PlayerAudioSource(DiscordApi api, TextChannel textChannel, ServerVoiceChannel serverVoiceChannel, AudioPlayerManager audioPlayerManager) {
         super(api);
