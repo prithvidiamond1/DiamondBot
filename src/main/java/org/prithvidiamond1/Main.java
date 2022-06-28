@@ -5,12 +5,8 @@ import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.server.Server;
 import org.prithvidiamond1.DB.Models.DiscordServer;
 import org.prithvidiamond1.DB.Repositories.DiscordServerRepository;
-import org.prithvidiamond1.GuildCommands.GuildCommandHandler;
-import org.prithvidiamond1.GuildCommands.GuildCommandRunner;
 import org.prithvidiamond1.HelperHandlers.ServerJoinHandler;
 import org.prithvidiamond1.HelperHandlers.ServerLeaveHandler;
-import org.prithvidiamond1.SlashCommands.SlashCommandHandler;
-import org.prithvidiamond1.SlashCommands.SlashCommandRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +39,18 @@ public class Main {
     public static String botIconURL = "https://i.imgur.com/ERxQB6z.png";
 
     /**
+     * Supported Audio Sources for voice channel audio playback
+     */
+    public static String[] audioSources = {
+            "youtube",
+    };
+
+    /**
+     * The YouTube API key
+     */
+    public static String youtubeApiKey = System.getenv().get("YT_API_KEY");
+
+    /**
      * The main logger object
      */
     public static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -52,15 +60,39 @@ public class Main {
      */
     public static DiscordServerRepository discordServerRepository = null;
 
-    @Autowired
-    private GuildCommandHandler guildCommandRegistry;
+    /**
+     * Enumerations for the different voice channel connection states
+     */
+    public enum VoiceConnectionStatus {
+        /**
+         * State for successful audio connection
+         */
+        Successful,
+        /**
+         * State for unsuccessful audio connection
+         */
+        Unsuccessful,
+        /**
+         * State for a pre-existing audio connection
+         */
+        AlreadyConnected
+    }
 
+    /**
+     * The command handler instance
+     */
     @Autowired
-    private SlashCommandHandler slashCommandRegistry;
+    private CommandHandler commandHandler;
 
+    /**
+     * The server join handler instance
+     */
     @Autowired
     private ServerJoinHandler serverJoinHandler;
 
+    /**
+     * The server leave handler instance
+     */
     @Autowired
     private ServerLeaveHandler serverLeaveHandler;
 
@@ -88,7 +120,8 @@ public class Main {
                 .setWaitForServersOnStartup(true)
                 .setWaitForUsersOnStartup(true)
                 .login().exceptionally(exception -> {    // Error message for any failed actions from the above
-                    exception.printStackTrace();
+                    logger.error("Error setting up DiscordApi instance!");
+                    logger.error(exception.getMessage());
                     return null;
                 })
                 .join();
@@ -97,21 +130,20 @@ public class Main {
 
         // Handling server entries in the database
         if (discordServerRepository.findAll().isEmpty()) {
+            logger.trace("Bot server data repository empty, initializing data repository...");
             Collection<Server> servers = api.getServers();
             for (Server server : servers) {
                 discordServerRepository.save(new DiscordServer(String.valueOf(server.getId()), defaultGuildPrefix));
             }
+            logger.trace("Bot server data repository initialized");
         }
 
         // Server join and leave handlers
         api.addServerJoinListener(serverJoinHandler);
         api.addServerLeaveListener(serverLeaveHandler);
 
-        // Guild Commands
-        GuildCommandRunner.run(api, guildCommandRegistry);
-
-        // Slash Commands
-        SlashCommandRunner.run(api, slashCommandRegistry);
+        // Commands
+        CommandRegister.run(api, commandHandler);
 
         // Self mention listener
         AuxiliaryListeners.selfMentionListener(api);

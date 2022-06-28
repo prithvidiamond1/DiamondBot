@@ -21,8 +21,11 @@ public class ServerHelperFunctions {
     public static DiscordServer resolveServerModelById(Server server){
         DiscordServer discordServer = null;
         Optional<DiscordServer> serverModel = Main.discordServerRepository.findById(String.valueOf(server.getId()));
-        if (serverModel.isPresent()){
+        if (serverModel.isPresent()) {
+            Main.logger.trace("Server model present, getting server model...");
             discordServer = serverModel.get();
+        } else {
+            Main.logger.trace("Server model not present, returning null...");
         }
         return discordServer;
     }
@@ -40,7 +43,6 @@ public class ServerHelperFunctions {
                 .exceptionally(exception -> {   // Error message for failing to get the list of global slash commands
                     Main.logger.error("Unable to retrieve list of global slash commands!");
                     Main.logger.error(exception.getMessage());
-//                    exception.printStackTrace();
                     return null;
                 })
                 .join();
@@ -53,7 +55,6 @@ public class ServerHelperFunctions {
                         .exceptionally(exception -> {   // Error message for failing to get global slash command by command id
                             Main.logger.error("Unable to retrieve global slash command by id!");
                             Main.logger.error(exception.getMessage());
-//                            exception.printStackTrace();
                             return null;
                         })
                         .join();
@@ -62,7 +63,6 @@ public class ServerHelperFunctions {
                         .exceptionally(exception -> {   // Error message for failing to delete command that needed to be removed
                             Main.logger.error("Unable to delete the requested global slash command!");
                             Main.logger.error(exception.getMessage());
-//                            exception.printStackTrace();
                             return null;
                         })
                         .join();

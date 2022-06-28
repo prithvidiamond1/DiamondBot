@@ -1,0 +1,40 @@
+
+# ignored directories
+.idea
+.gradle
+/misc/secrets
+
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# Package Files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Miscellaneous assets
+# Image
+*.png
+*.psd
+
+# TrueTypeFonts
+*.ttf
+
+# hardcoded ignores
+previous-compilation-data.bin
+/build/tmp/javadoc/javadoc.options
+
+# exceptions
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+!DiscordBot.jar
+
+
+
