@@ -176,6 +176,10 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
         Iterator<AudioTrack> iter = this.audioSourceHandler.playerAudioSource.trackScheduler.getTracksInQueue();
         ArrayList<String> embedDescriptions = new ArrayList<>();
         StringBuilder descriptionBuilder = new StringBuilder();
+        int trackQueueSize = this.audioSourceHandler.playerAudioSource.trackScheduler.getQueueSize();
+        String descriptionStartLine = trackQueueSize <= 1 ? String.format("Currently **%d** track in queue\n", trackQueueSize):
+                String.format("Currently **%d** tracks in queue\n", trackQueueSize);
+        descriptionBuilder.append(descriptionStartLine).append("\n");
         if (iter.hasNext()) {
             while (iter.hasNext()) {
                 AudioTrack audioTrack = iter.next();

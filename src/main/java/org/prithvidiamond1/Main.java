@@ -43,7 +43,6 @@ public class Main {
      */
     public static String[] audioSources = {
             "youtube",
-            "soundcloud"
     };
 
     /**
@@ -131,10 +130,12 @@ public class Main {
 
         // Handling server entries in the database
         if (discordServerRepository.findAll().isEmpty()) {
+            logger.trace("Bot server data repository empty, initializing data repository...");
             Collection<Server> servers = api.getServers();
             for (Server server : servers) {
                 discordServerRepository.save(new DiscordServer(String.valueOf(server.getId()), defaultGuildPrefix));
             }
+            logger.trace("Bot server data repository initialized");
         }
 
         // Server join and leave handlers

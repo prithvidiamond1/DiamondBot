@@ -21,8 +21,11 @@ public class ServerHelperFunctions {
     public static DiscordServer resolveServerModelById(Server server){
         DiscordServer discordServer = null;
         Optional<DiscordServer> serverModel = Main.discordServerRepository.findById(String.valueOf(server.getId()));
-        if (serverModel.isPresent()){
+        if (serverModel.isPresent()) {
+            Main.logger.trace("Server model present, getting server model...");
             discordServer = serverModel.get();
+        } else {
+            Main.logger.trace("Server model not present, returning null...");
         }
         return discordServer;
     }

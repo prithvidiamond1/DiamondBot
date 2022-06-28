@@ -48,7 +48,7 @@ public class HelpCommand implements Command{
         slashCommandInteraction.getServer().ifPresent(server -> slashCommandInteraction.createImmediateResponder()
                         .addEmbed(new EmbedBuilder()
                                 .setTitle("List of slash commands and their descriptions")
-                                .setDescription(CommandHandler.generateHelpDescription("")) // Slash commands don't have command prefixes
+                                .setDescription(CommandHandler.generateHelpDescription("/")) // Slash commands don't actually have command prefixes
                                 .setThumbnail(Main.botIconURL)
                                 .setColor(Main.botAccentColor)
                         ).respond()

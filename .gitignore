@@ -29,10 +29,12 @@
 
 # hardcoded ignores
 previous-compilation-data.bin
+/build/tmp/javadoc/javadoc.options
 
 # exceptions
 !gradle-wrapper.jar
 !gradle-wrapper.properties
 !DiscordBot.jar
+
 
 

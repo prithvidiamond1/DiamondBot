@@ -53,7 +53,7 @@ public class CommandRegister {
                 .join();
 
         SlashCommandBuilder prefixCommand = commandHandler.registerCommand("prefix",
-                "A command to change the guild prefix of the bot",
+                "A command to change the guild prefix of the bot. *_This command takes arguments_*",
                 new PrefixCommand());
         SlashCommandCustomizer prefixCommandCustomizer = new SlashCommandCustomizer(prefixCommand);
         prefixCommandCustomizer.addCommandOption(SlashCommandOptionType.STRING,
@@ -81,7 +81,7 @@ public class CommandRegister {
                 .join();
 
         SlashCommandBuilder playCommand = commandHandler.registerCommand("play",
-                "A command to play music",
+                "A command to play music. *_This command takes arguments_*",
                 new PlayCommand());
         SlashCommandCustomizer playCommandCustomizer = new SlashCommandCustomizer(playCommand);
         playCommandCustomizer.addCommandOptionWithChoices(SlashCommandOptionType.STRING,

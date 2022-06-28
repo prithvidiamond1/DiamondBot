@@ -97,6 +97,7 @@ public class TrackScheduler implements AudioEventListener {
         String embedDescription;
         EmbedBuilder embed;
         int queueSize = this.getQueueSize();
+        Main.logger.info(String.format("Current queue size: %d", queueSize));
 
         if (queueSize == 100) {
             embed = new EmbedBuilder()
@@ -105,10 +106,10 @@ public class TrackScheduler implements AudioEventListener {
                     .setColor(Main.botAccentColor)
                     .setThumbnail(Main.botIconURL);
         } else {
-            if (queueSize == 1) {
-                embedDescription = String.format("Currently %d track in queue\n To view the full queue, click the **View Full Track Queue** button", queueSize);
+            if (queueSize == 0) {
+                embedDescription = String.format("Currently %d track in queue\n To view the full queue, click the **View Full Track Queue** button", queueSize + 1);
             } else {
-                embedDescription = String.format("Currently %d tracks in queue\n To view the full queue, click the **View Full Track Queue** button", queueSize);
+                embedDescription = String.format("Currently %d tracks in queue\n To view the full queue, click the **View Full Track Queue** button", queueSize + 1);
             }
             embed = new EmbedBuilder()
                     .setTitle(String.format("Added to Queue - %s", track.getInfo().title))
@@ -125,7 +126,6 @@ public class TrackScheduler implements AudioEventListener {
         Main.logger.info(String.format("Queue size: %d", this.trackQueue.size()));
 
         this.sendMessageEmbed(embed);
-
     }
 
     /**
@@ -186,6 +186,7 @@ public class TrackScheduler implements AudioEventListener {
             this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
         }
         this.scheduledExecutorService.schedule(task, 1, TimeUnit.MINUTES);
+        Main.logger.info("The bot disconnect scheduler has been reset and restarted");
     }
 
     /**

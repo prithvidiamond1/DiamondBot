@@ -87,6 +87,7 @@ public class CommandHandler implements MessageCreateListener, SlashCommandCreate
         for (String commandName: commandDescriptions.keySet()){
             helpDescription.append(String.format("**%s%s** - %s%n", commandPrefix, commandName, commandDescriptions.get(commandName)));
         }
+        helpDescription.append(String.format("To learn how to use a command that takes arguments, run the command with no arguments as follows: **%s<command name>**", commandPrefix));
         return helpDescription.toString();
     }
 }

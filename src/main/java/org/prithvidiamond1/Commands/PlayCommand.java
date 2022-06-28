@@ -28,9 +28,11 @@ import org.testng.internal.collections.Pair;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.prithvidiamond1.AudioPlayer.PlayerControlsHandler.playerActionRow;
+import static org.prithvidiamond1.ServerHelperFunctions.resolveServerModelById;
 
 /**
  * This class contains the actions of the play command
@@ -176,8 +178,6 @@ public class PlayCommand implements Command {
      * @return an {@link EmbedBuilder} which is the response from this action
      */
     private EmbedBuilder commandFunction(DiscordApi api, User user, Server server, String source, String searchString){
-        EmbedBuilder functionResponse = null;
-
         AudioPlayerManager audioPlayerManager = new DefaultAudioPlayerManager();
         String audioSourceLink = null;
 
@@ -191,6 +191,7 @@ public class PlayCommand implements Command {
 
         Pair<Main.VoiceConnectionStatus, EmbedBuilder> connectionResponse = findVoiceChannel(api, user, server);
         Main.VoiceConnectionStatus voiceConnectionStatus = connectionResponse.first();
+        EmbedBuilder functionResponse = connectionResponse.second();
         PlayerAudioSource playerAudioSource = new PlayerAudioSource(api, this.textChannel, this.serverVoiceChannel, audioPlayerManager);
         connectToSource(this.serverVoiceChannel, voiceConnectionStatus, playerAudioSource);
         Main.logger.info(String.format("VoiceConnectionStatus = %s", voiceConnectionStatus));
@@ -211,23 +212,22 @@ public class PlayCommand implements Command {
                 AudioItem newTrackItem = null;
                 if (source.equalsIgnoreCase("youtube")) {
                     newTrackItem = this.youtubeSourceManager.loadTrackWithVideoId(fetchYoutubeSourceById(searchString), true);
-                }
+                } // check for other sources
+
                 if (newTrackItem == null || newTrackItem.equals(AudioReference.NO_TRACK)) {
                     functionResponse = new EmbedBuilder()
                                     .setTitle("Requested video/song not found!")
                                     .setDescription("Make sure the video being searched is public")
                                     .setColor(Main.botAccentColor)
                                     .setThumbnail(Main.botIconURL);
-                } else {
-                    if (newTrackItem instanceof AudioTrack newTrack) {
-                        functionResponse = new EmbedBuilder()
-                                .setTitle("Adding New Track to Queue")
-                                .setDescription(String.format("Adding Track to Queue - %s", newTrack.getInfo().title))
-                                .setColor(Main.botAccentColor)
-                                .setThumbnail(Main.botIconURL);
+                } else if (newTrackItem instanceof AudioTrack newTrack) {
+                    functionResponse = new EmbedBuilder()
+                            .setTitle("Adding New Track to Queue")
+                            .setDescription(String.format("Adding Track to Queue - %s", newTrack.getInfo().title))
+                            .setColor(Main.botAccentColor)
+                            .setThumbnail(Main.botIconURL);
 
-                        this.audioSourceHandler.playerAudioSource.trackScheduler.queue(newTrack);
-                    }
+                    this.audioSourceHandler.playerAudioSource.trackScheduler.queue(newTrack);
                 }
             }
         } else {
@@ -237,10 +237,6 @@ public class PlayCommand implements Command {
                     .setDescription("If you are seeing this then something went wrong while trying to play your requested audio track. Try playing it again and if you see this message again, contact **Prithvi** if you know him personally and if not, send him an email at prithviraj645@gmail.com")
                     .setColor(Main.botAccentColor)
                     .setThumbnail(Main.botIconURL);
-        }
-
-        if (functionResponse == null){
-            functionResponse = connectionResponse.second();
         }
 
         return functionResponse;
@@ -256,23 +252,78 @@ public class PlayCommand implements Command {
         String[] commandArgs = event.getMessage().getContent().split(" ");
         Main.logger.info(String.format("No of elements in commandArgs: %d", commandArgs.length));
         Main.logger.info(String.format("commandArgs: %s", Arrays.toString(commandArgs)));
-        if (commandArgs.length > 2) {
-            Main.logger.info("phase 1 - works");
-            if (Arrays.stream(Main.audioSources).anyMatch(source -> source.equals(commandArgs[1].toLowerCase()))) {
-                Main.logger.info("phase 2 - works");
-                String source = commandArgs[1].toLowerCase();
-                String searchString = parseCommandArgs(commandArgs);
-                EmbedBuilder response = commandFunction(event.getApi(),
-                        event.getMessageAuthor().asUser().orElse(null),
-                        event.getServer().orElse(null), source, searchString);
-                new MessageBuilder().addEmbed(response)
-                        .addComponents(playerActionRow)
+        if (commandArgs.length > 2 && Arrays.asList(Main.audioSources).contains(commandArgs[1].toLowerCase())) {
+            Main.logger.info("Guild play command has received the correct number of args including a valid source");
+            if (commandArgs[2].equals("\"\"")) {
+                Main.logger.info("Guild play command has received an empty search string as one of its arguments");
+                new MessageBuilder().addEmbed(new EmbedBuilder()
+                                .setTitle("Empty search string!")
+                                .setDescription("Please provide a non-empty search string to find a playable source")
+                                .setColor(Main.botAccentColor)
+                                .setThumbnail(Main.botIconURL))
                         .send(this.textChannel)
                         .exceptionally(exception -> {
                             Main.logger.error("Unable to respond to the guild command!");
                             Main.logger.error(exception.getMessage());
                             return null;
                         });
+            } else {
+                String source = commandArgs[1].toLowerCase();
+                String searchString = parseCommandArgs(commandArgs);
+                EmbedBuilder response = commandFunction(event.getApi(),
+                        event.getMessageAuthor().asUser().orElse(null),
+                        event.getServer().orElse(null), source, searchString);
+                new MessageBuilder().addEmbed(response)
+                        .send(this.textChannel)
+                        .exceptionally(exception -> {
+                            Main.logger.error("Unable to respond to the guild command!");
+                            Main.logger.error(exception.getMessage());
+                            return null;
+                        });
+            }
+        } else {
+            if (commandArgs.length == 1){
+                String prefix = resolveServerModelById(Objects.requireNonNull(event.getServer().orElse(null))).getGuildPrefix();
+                Main.logger.info("Showing command help message");
+                new MessageBuilder().addEmbed(new EmbedBuilder()
+                                .setTitle("Play Command")
+                                .setDescription(String.format("To use the play command, type **%splay <source> \"<search string>\"**\nSupported sources currently include: **%s**", prefix, Arrays.toString(Main.audioSources).replaceAll("[\\[\\]]", "")))
+                                .setColor(Main.botAccentColor)
+                                .setThumbnail(Main.botIconURL))
+                        .send(this.textChannel)
+                        .exceptionally(exception -> {
+                            Main.logger.error("Unable to respond to the guild command!");
+                            Main.logger.error(exception.getMessage());
+                            return null;
+                        });
+            } else {
+                if (!Arrays.asList(Main.audioSources).contains(commandArgs[1].toLowerCase())) {
+                    Main.logger.info("Guild play command has not received a matching source as one of its arguments!");
+                    new MessageBuilder().addEmbed(new EmbedBuilder()
+                                    .setTitle("No matching sources!")
+                                    .setDescription(String.format("Currently the only sources supported are: **%s**", Arrays.toString(Main.audioSources).replaceAll("[\\[\\]]", "")))
+                                    .setColor(Main.botAccentColor)
+                                    .setThumbnail(Main.botIconURL))
+                            .send(this.textChannel)
+                            .exceptionally(exception -> {
+                                Main.logger.error("Unable to respond to the guild command!");
+                                Main.logger.error(exception.getMessage());
+                                return null;
+                            });
+                } else {
+                    Main.logger.info("Guild play command has not received a search string as one of its arguments!");
+                    new MessageBuilder().addEmbed(new EmbedBuilder()
+                                    .setTitle("Missing search string argument!")
+                                    .setDescription("Along with the play command and it's other arguments, pass in a search string surrounded in double quotes as shown: **\"<search string>\"**")
+                                    .setColor(Main.botAccentColor)
+                                    .setThumbnail(Main.botIconURL))
+                            .send(this.textChannel)
+                            .exceptionally(exception -> {
+                                Main.logger.error("Unable to respond to the guild command!");
+                                Main.logger.error(exception.getMessage());
+                                return null;
+                            });
+                }
             }
         }
     }
@@ -287,26 +338,24 @@ public class PlayCommand implements Command {
         this.textChannel = slashCommandInteraction.getChannel().orElse(null);
         List<SlashCommandInteractionOption> commandArgs = slashCommandInteraction.getOptions();
         Optional<String> requestedAudioSource = commandArgs.get(0).getStringValue();
-        if (requestedAudioSource.isPresent()) {
-            if (Arrays.stream(Main.audioSources).anyMatch(source -> source.equals(requestedAudioSource.get().toLowerCase()))) {
-                Main.logger.info("phase 1 - works");
-                Optional<String> searchStringOptional = commandArgs.get(1).getStringValue();
-                if (searchStringOptional.isPresent()){
-                    String source = requestedAudioSource.get().toLowerCase();
-                    String searchString = searchStringOptional.get();
-                    EmbedBuilder response = commandFunction(event.getApi(),
-                            slashCommandInteraction.getUser(),
-                            slashCommandInteraction.getServer().orElse(null),
-                            source, searchString);
-                    slashCommandInteraction.createImmediateResponder()
-                            .addEmbed(response)
-                            .respond()
-                            .exceptionally(exception -> {
-                                Main.logger.error("Unable to respond to the slash command!");
-                                Main.logger.error(exception.getMessage());
-                                return null;
-                            });
-                }
+        if (requestedAudioSource.isPresent() && Arrays.asList(Main.audioSources).contains(requestedAudioSource.get().toLowerCase())) {
+            Main.logger.info("Slash play command has received a matching source as its arguments");
+            Optional<String> searchStringOptional = commandArgs.get(1).getStringValue();
+            if (searchStringOptional.isPresent()) {
+                String source = requestedAudioSource.get().toLowerCase();
+                String searchString = searchStringOptional.get();
+                EmbedBuilder response = commandFunction(event.getApi(),
+                        slashCommandInteraction.getUser(),
+                        slashCommandInteraction.getServer().orElse(null),
+                        source, searchString);
+                slashCommandInteraction.createImmediateResponder()
+                        .addEmbed(response)
+                        .respond()
+                        .exceptionally(exception -> {
+                            Main.logger.error("Unable to respond to the slash command!");
+                            Main.logger.error(exception.getMessage());
+                            return null;
+                        });
             }
         }
     }

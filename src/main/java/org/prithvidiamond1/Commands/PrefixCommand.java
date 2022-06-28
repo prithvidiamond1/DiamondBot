@@ -83,8 +83,8 @@ public class PrefixCommand implements Command{
         if (!prefixIsValid) {
             new MessageBuilder().setEmbed(
                             new EmbedBuilder()
-                                    .setTitle("Incorrect syntax for changing prefix!")
-                                    .setDescription(String.format("Make sure to use the following syntax: %sprefix \"NEW_PREFIX\"", currentPrefix))
+                                    .setTitle("Prefix Command")
+                                    .setDescription(String.format("To use the prefix command, type **%sprefix \"<NEW_PREFIX>\"**\nNote that the new prefix cannot be a blank string or one with only white spaces", currentPrefix))
                                     .setColor(Main.botAccentColor))
                     .send(event.getChannel())
                     .exceptionally(exception -> {   // Error message for failing to respond to the guild command
@@ -138,6 +138,6 @@ public class PrefixCommand implements Command{
                                         Main.logger.error(exception.getMessage());
                                         return null;
                                     });
-        }));
+                        }));
     }
 }
