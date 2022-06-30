@@ -1,15 +1,17 @@
 # Diamond Bot
 A custom Discord bot built using [Javacord](https://github.com/Javacord/Javacord), [Spring](https://spring.io/) and [MongoDB](https://www.mongodb.com/).
 
-### Documentation
+## Documentation
 The documentation of this repository's code is available via the Javadocs made available at the following [GitHub page](https://prithvidiamond1.github.io/DiamondBot/).
 
-NOTE: If you wish to make any contributions to the repository, make sure to generate the Javadocs that document the entire project, including the updates made by you and put them in the '/docs' directory.
+**Note:** If you wish to make any contributions to the repository, make sure to generate the Javadocs that document the entire project, including the updates made by you and put them in the '/docs' directory.
 
-### Build Instructions
+## Build Instructions
+
 For deployment on [Heroku](https://www.heroku.com/), certain changes needed to be made to the [Gradle](https://gradle.org/) build system. Once you have the latest version of Diamond Bot's source code from GitHub pulled to your local machine, follow the below instructions to successfully build Diamond Bot.
 
-On IntelliJ IDEA:
+#### On IntelliJ IDEA:
+
 * Save your current configuration and click on 'Edit Configurations...'.
 * Click on the '+' button in the top left corner of the Configurations window to add a new configuration.
 * In the dropdown list that appears, select the 'Gradle' option.
@@ -23,13 +25,15 @@ Verify this by checking if a JAR file has generated in the '/build/libs' directo
 
 Now your code is ready to be committed and pushed to the remote repository on GitHub. Heroku will automatically pull the latest version from the repository and run that instance.
 
-NOTE: If you make changes to the 'build.gradle' file or if it is the first time Gradle is being run for the project, you will see a Gradle sync button on the screen. 
+**Note:** If you make changes to the 'build.gradle' file or if it is the first time Gradle is being run for the project, you will see a Gradle sync button on the screen. 
 Make sure to click it to allow Gradle to fetch the necessary libraries required for building the project.
 
-### Run Instructions
+## Run Instructions
+
 If you wish to run the JAR file locally, you can do so by creating a 'Run JAR' configuration in your IDE.
 
-On IntelliJ IDEA:
+#### On IntelliJ IDEA:
+
 * Click on the '+' button in the top left corner of the Configurations window to add a new configuration.
 * In the dropdown list that appears, select the 'JAR Application' option.
 * Set the name to 'Run JAR'.
