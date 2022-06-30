@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://github.com/prithvidiamond1/DiamondBot"><img src="https://i.imgur.com/ERxQB6z.png" alt="Diamond Bot"></a>
+  <a href="https://github.com/prithvidiamond1/DiamondBot"><img src="https://i.imgur.com/ERxQB6z.png" height=300 alt="Diamond Bot"></a>
   <br>
   Diamond Bot <sup>v1</sup>
 </h1>
