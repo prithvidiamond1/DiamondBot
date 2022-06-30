@@ -1,7 +1,7 @@
 <h1 align="center">
   <a href="https://github.com/prithvidiamond1/DiamondBot"><img src="https://i.imgur.com/ERxQB6z.png" height=300 alt="Diamond Bot"></a>
   <br>
-  Diamond Bot <sup>v1</sup>
+  Diamond Bot <sup>v0.1</sup>
 </h1>
 <h4 align="center">A custom Discord bot built using <a href="https://github.com/Javacord/Javacord">Javacord</a>, <a href="https://spring.io/">Spring</a>, <a href="https://www.mongodb.com/">MongoDB</a></h4>
 <br>
