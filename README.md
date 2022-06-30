@@ -6,6 +6,7 @@
 <p align="center">
   <a href="#documentation">Documentation</a> | <a href="#build-instructions">Build Instructions</a> | <a href="#run-instructions">Run Instructions</a>
 </p>
+
 A custom Discord bot built using [Javacord](https://github.com/Javacord/Javacord), [Spring](https://spring.io/) and [MongoDB](https://www.mongodb.com/).
 
 ## Documentation
