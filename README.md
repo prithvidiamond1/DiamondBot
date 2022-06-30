@@ -3,11 +3,12 @@
   <br>
   Diamond Bot <sup>v1</sup>
 </h1>
+<h4 align="center">A custom Discord bot built using <a href="https://github.com/Javacord/Javacord">Javacord</a>, <a href="https://spring.io/">Spring</a>, <a href="https://www.mongodb.com/">MongoDB</a></h4>
+<br>
+
 <p align="center">
   <a href="#documentation">Documentation</a> | <a href="#build-instructions">Build Instructions</a> | <a href="#run-instructions">Run Instructions</a>
 </p>
-
-A custom Discord bot built using [Javacord](https://github.com/Javacord/Javacord), [Spring](https://spring.io/) and [MongoDB](https://www.mongodb.com/).
 
 ## Documentation
 The documentation of this repository's code is available via the Javadocs made available at the following [GitHub page](https://prithvidiamond1.github.io/DiamondBot/).
