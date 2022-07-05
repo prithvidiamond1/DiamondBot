@@ -47,7 +47,8 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
      * @param componentInteraction the interaction from the button ({@link MessageComponentInteraction})
      */
     private void playPause(MessageComponentInteraction componentInteraction){
-        componentInteraction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
+        componentInteraction.createOriginalMessageUpdater()
+                .removeAllComponents().update().thenAccept(interactionOriginalResponseUpdater -> {
             YoutubeSearchEngine youtube = new YoutubeSearchEngine();
             VideoSnippet video = youtube.getVideoSnippetById(this.audioSourceHandler.playerAudioSource.audioPlayer.getPlayingTrack().getIdentifier());
             String thumbnailUrl = getYoutubeVideoUrl(video);
@@ -92,7 +93,8 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
      * @param componentInteraction the interaction from the button ({@link MessageComponentInteraction})
      */
     private void skipToNextTrack(MessageComponentInteraction componentInteraction){
-        componentInteraction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
+        componentInteraction.createOriginalMessageUpdater()
+                .removeAllComponents().update().thenAccept(interactionOriginalResponseUpdater -> {
             AudioTrack nextTrack = this.audioSourceHandler.playerAudioSource.trackScheduler.getNextTrackInQueue();
             if (this.audioSourceHandler.playerAudioSource.trackScheduler.getQueueSize() > 0) {
                 componentInteraction.createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
@@ -132,7 +134,8 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
      * @param componentInteraction the interaction from the button ({@link MessageComponentInteraction})
      */
     private void skipToPreviousTrack(MessageComponentInteraction componentInteraction){
-        componentInteraction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
+        componentInteraction.createOriginalMessageUpdater()
+                .removeAllComponents().update().thenAccept(interactionOriginalResponseUpdater -> {
             AudioTrack nextTrack = this.audioSourceHandler.playerAudioSource.trackScheduler.getLastPlayedTrack();
             if (nextTrack != null) {
                 componentInteraction.createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
@@ -197,7 +200,8 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
             embedDescriptions.add(descriptionBuilder.toString());
         }
 
-        componentInteraction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
+        componentInteraction.createOriginalMessageUpdater()
+                .removeAllComponents().update().thenAccept(interactionOriginalResponseUpdater -> {
             if (embedDescriptions.size() == 0){
                 componentInteraction .createFollowupMessageBuilder().addEmbed(new EmbedBuilder()
                         .setTitle("No tracks currently in queue")
@@ -241,12 +245,28 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
             return null;
         });
 
-        for (int i = 1; i < embedDescriptions.size(); i++){
+        for (int i = 1; i < embedDescriptions.size() - 1; i++){
             new MessageBuilder().addEmbed(new EmbedBuilder()
                     .setTitle(String.format("Track Queue - %d/%d", i+1, embedDescriptions.size()))
                     .setDescription(embedDescriptions.get(0))
                     .setColor(Main.botAccentColor)
                     .setThumbnail(Main.botIconURL))
+                    .send(componentInteraction.getChannel().orElse(null))
+                    .exceptionally(exception -> {
+                        Main.logger.error("Unable to respond to this interaction!");
+                        Main.logger.error(exception.getMessage());
+                        return null;
+                    });
+        }
+        if (embedDescriptions.size() > 1) {
+            EmbedBuilder endingEmbed = new EmbedBuilder()
+                    .setTitle(String.format("Track Queue - %d/%d", embedDescriptions.size(), embedDescriptions.size()))
+                    .setDescription(embedDescriptions.get(embedDescriptions.size() - 1))
+                    .setColor(Main.botAccentColor)
+                    .setThumbnail(Main.botIconURL);
+
+            new MessageBuilder().addEmbed(endingEmbed)
+                    .addComponents(playerActionRow)
                     .send(componentInteraction.getChannel().orElse(null))
                     .exceptionally(exception -> {
                         Main.logger.error("Unable to respond to this interaction!");
@@ -261,7 +281,8 @@ public class PlayerControlsHandler implements MessageComponentCreateListener {
      * @param componentInteraction the interaction from the button ({@link MessageComponentInteraction})
      */
     public void clearTrackQueue(MessageComponentInteraction componentInteraction){
-        componentInteraction.respondLater().thenAccept(interactionOriginalResponseUpdater -> {
+        componentInteraction.createOriginalMessageUpdater()
+                .removeAllComponents().update().thenAccept(interactionOriginalResponseUpdater -> {
            this.audioSourceHandler.playerAudioSource.trackScheduler.clearTrackQueue();
            componentInteraction.createFollowupMessageBuilder().addEmbed(
                    new EmbedBuilder()

@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.concurrent.*;
 
 import static org.prithvidiamond1.CommandFunctions.getYoutubeVideoUrl;
+import static org.prithvidiamond1.ServerHelperFunctions.removeAudioPlayerControls;
 
 /**
  * This class holds all the functions related to scheduling player tracks such as the track queue and player control functions
@@ -26,6 +27,7 @@ public class TrackScheduler implements AudioEventListener {
     private AudioTrack lastPlayedTrack;
     private final TextChannel textChannel;
     private final ServerVoiceChannel serverVoiceChannel;
+    private PlayerControlsHandler playerControlsHandler;
     private ScheduledExecutorService scheduledExecutorService;
 
     private final BlockingDeque<AudioTrack> trackQueue;
@@ -150,16 +152,34 @@ public class TrackScheduler implements AudioEventListener {
     }
 
     /**
+     * Method to link a player controls handler to the audio player's track scheduler
+     * @param playerControlsHandler the player controls handler
+     */
+    public void addPlayerControlsHandler (PlayerControlsHandler playerControlsHandler){
+        this.playerControlsHandler = playerControlsHandler;
+    }
+
+    /**
      * Method that performs the disconnect function for the bot's {@link ScheduledExecutorService}
+     * <br> This method also removes any remaining audio player buttons
      * @return a {@link Runnable} version of this function
      */
     private Runnable botDisconnect(){
-        return () -> this.serverVoiceChannel.disconnect()
-                        .exceptionally(exception -> {
-                            Main.logger.error("An error occurred when trying to disconnect from a voice channel");
-                            Main.logger.error(exception.getMessage());
-                            return null;
-                        });
+        return () -> {
+            try {
+                this.serverVoiceChannel.getApi().removeListener(this.playerControlsHandler);
+            } catch (Exception exception){
+                Main.logger.error("An error occurred when trying to remove the player controls handler");
+                Main.logger.error(exception.getMessage());
+            }
+
+            this.serverVoiceChannel.disconnect()
+                    .exceptionally(exception -> {
+                        Main.logger.error("An error occurred when trying to disconnect from a voice channel");
+                        Main.logger.error(exception.getMessage());
+                        return null;
+                    });
+        };
     }
 
     /**
@@ -167,6 +187,8 @@ public class TrackScheduler implements AudioEventListener {
      * @param embed the embed ({@link EmbedBuilder})
      */
     private void sendMessageEmbed (EmbedBuilder embed){
+        removeAudioPlayerControls(this.textChannel);
+
         new MessageBuilder().addEmbed(embed)
                 .addComponents(PlayerControlsHandler.playerActionRow)
                 .send(this.textChannel)
@@ -248,6 +270,11 @@ public class TrackScheduler implements AudioEventListener {
         }
 
         boolean isPlayingTrackNull = this.audioPlayer.getPlayingTrack() == null;
+
+        if (getQueueSize() == 0 && isPlayingTrackNull){
+            removeAudioPlayerControls(this.textChannel);
+        }
+
         Main.logger.info(String.format("Is Playing Track Null: %b", isPlayingTrackNull));
         if (getQueueSize() == 0 && isPlayingTrackNull){
             botDisconnectTimerStartSequence();

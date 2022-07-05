@@ -21,7 +21,6 @@ import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
 import org.prithvidiamond1.AudioPlayer.AudioSourceHandler;
 import org.prithvidiamond1.AudioPlayer.PlayerAudioSource;
-import org.prithvidiamond1.AudioPlayer.PlayerControlsHandler;
 import org.prithvidiamond1.AudioPlayer.Youtube.YoutubeSearchEngine;
 import org.prithvidiamond1.Main;
 import org.testng.internal.collections.Pair;
@@ -31,7 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static org.prithvidiamond1.AudioPlayer.PlayerControlsHandler.playerActionRow;
+import static org.prithvidiamond1.ServerHelperFunctions.removeAudioPlayerControls;
 import static org.prithvidiamond1.ServerHelperFunctions.resolveServerModelById;
 
 /**
@@ -178,6 +177,8 @@ public class PlayCommand implements Command {
      * @return an {@link EmbedBuilder} which is the response from this action
      */
     private EmbedBuilder commandFunction(DiscordApi api, User user, Server server, String source, String searchString){
+        removeAudioPlayerControls(this.textChannel);
+
         AudioPlayerManager audioPlayerManager = new DefaultAudioPlayerManager();
         String audioSourceLink = null;
 
@@ -198,10 +199,7 @@ public class PlayCommand implements Command {
 
         if (voiceConnectionStatus.equals(Main.VoiceConnectionStatus.Successful)){
             this.audioSourceHandler = new AudioSourceHandler(playerAudioSource);
-            PlayerControlsHandler playerControlsHandler = new PlayerControlsHandler(audioSourceHandler);
-            api.addMessageComponentCreateListener(playerControlsHandler);
-
-            audioPlayerManager.loadItem(audioSourceLink, audioSourceHandler);
+            audioPlayerManager.loadItem(audioSourceLink, this.audioSourceHandler);
 
         } else if (voiceConnectionStatus.equals(Main.VoiceConnectionStatus.AlreadyConnected)) {
             if (this.audioSourceHandler.playerAudioSource.audioPlayer.getPlayingTrack() == null) {

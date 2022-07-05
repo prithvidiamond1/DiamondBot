@@ -21,6 +21,9 @@ public class AudioSourceHandler implements AudioLoadResultHandler {
      */
     public AudioSourceHandler(PlayerAudioSource playerAudioSource){
         this.playerAudioSource = playerAudioSource;
+        PlayerControlsHandler playerControlsHandler = new PlayerControlsHandler(this);
+        this.playerAudioSource.addPlayerControlsHandler(playerControlsHandler);
+        this.playerAudioSource.getApi().addMessageComponentCreateListener(playerControlsHandler);
     }
 
     /**

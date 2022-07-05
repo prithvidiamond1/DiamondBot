@@ -1,10 +1,16 @@
 package org.prithvidiamond1;
 
 import org.javacord.api.DiscordApi;
+import org.javacord.api.entity.DiscordEntity;
+import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.Message;
+import org.javacord.api.entity.message.MessageSet;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.interaction.SlashCommand;
 import org.prithvidiamond1.DB.Models.DiscordServer;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +19,28 @@ import java.util.Optional;
  * This class holds all the server related bot helper functions
  */
 public class ServerHelperFunctions {
+    /**
+     * Method to remove audio player controls from bot messages sent in a server text channel
+     * @param textChannel the server text channel where the audio player controls need to be removed
+     */
+    public static void removeAudioPlayerControls(TextChannel textChannel){
+        try {
+            MessageSet messageSet = textChannel.getMessages(50).get();
+            List<Message> messageList = new ArrayList<>(messageSet.stream().filter(message -> !message.getComponents().isEmpty()).toList());
+
+            messageList.sort(Comparator.comparing(DiscordEntity::getCreationTimestamp));
+
+            messageList.get(messageList.size() - 1).createUpdater().removeAllComponents().applyChanges().exceptionally(exception -> {
+                Main.logger.error("Unable to remove player controls from the last sent embed!");
+                Main.logger.error(exception.getMessage());
+                return null;
+            });
+        } catch (Exception exception){
+            Main.logger.error("An error occurred when trying to remove audio player controls!");
+            Main.logger.error(exception.getMessage());
+        }
+    }
+
     /**
      * Method that resolves a Javacord Server entity into its corresponding database model
      * @param server the Javacord Server entity object
