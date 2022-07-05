@@ -48,6 +48,14 @@ public class PlayerAudioSource extends AudioSourceBase {
     }
 
     /**
+     * Method to link a player controls handler to this player audio source's track scheduler
+     * @param playerControlsHandler the player control handler
+     */
+    public void addPlayerControlsHandler (PlayerControlsHandler playerControlsHandler){
+        this.trackScheduler.addPlayerControlsHandler(playerControlsHandler);
+    }
+
+    /**
      * Method that gets the next frame in the audio source
      * @return a byte array
      */
