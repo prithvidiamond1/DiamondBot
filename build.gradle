@@ -44,7 +44,7 @@ javadoc{
         (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
     }
     options.encoding("UTF-8")
-    destinationDir(new File("$rootDir/javadocs"))
+    destinationDir(new File("$rootDir/docs"))
 }
 
 test {
