@@ -1,7 +1,7 @@
 <h1 align="center">
   <a href="https://github.com/prithvidiamond1/DiamondBot"><img src="https://i.imgur.com/ERxQB6z.png" height=300 alt="Diamond Bot"></a>
   <br>
-  Diamond Bot <sup>v0.1.1</sup>
+  Diamond Bot <sup>v0.1.2</sup>
 </h1>
 <h4 align="center">A custom Discord bot built using <a href="https://github.com/Javacord/Javacord">Javacord</a>, <a href="https://spring.io/">Spring</a>, <a href="https://www.mongodb.com/">MongoDB</a></h4>
 <br>
@@ -21,15 +21,14 @@ For deployment on [Heroku](https://www.heroku.com/), certain changes needed to b
 
 #### On IntelliJ IDEA:
 
-* Save your current configuration and click on 'Edit Configurations...'.
-* Click on the '+' button in the top left corner of the Configurations window to add a new configuration.
-* In the dropdown list that appears, select the 'Gradle' option.
-* Set the name to 'Build JAR'.
-* Under the run section, type `clean bootJar` and make sure the 'Gradle Project' selected is the current project's name.
-* Once that is done, you are ready to build. After making the changes you wish to the code in your local repository, switch your configuration to 'Build JAR'.
+* Save your current configuration and click on `Edit Configurations...`.
+* Click on the `+` button in the top left corner of the Configurations window to add a new configuration.
+* In the dropdown list that appears, select the `Gradle` option.
+* Set the name to `Build JAR`.
+* Under the run section, type `clean bootJar javadoc` and make sure the 'Gradle Project' selected is the current project's name.
+* Once that is done, you are ready to build. After making the changes you wish to the code in your local repository, switch your configuration to `Build JAR`.
 * Click the build button for the configuration. Once it has finished, click the run button for the configuration.
-* An output window should pop-up showing you the tasks Gradle is performing. Once done, you should see a 'BUILD SUCCESSFUL' message indicating that the build was successful, at the bottom of the output window. 
-Verify this by checking if a JAR file has generated in the '/build/libs' directory.
+* An output window should pop-up showing you the tasks Gradle is performing. Once done, you should see a `BUILD SUCCESSFUL` message indicating that the build was successful, at the bottom of the output window. Verify this by checking if a JAR file has generated in the `/build/libs` directory. You should also see javadocs created/updated in the `/docs` directory.
 * If the build was unsuccessful, Gradle will provide you with some debug info so that you can find the problem yourself and fix it.
 
 Now your code is ready to be committed and pushed to the remote repository on GitHub. Heroku will automatically pull the latest version from the repository and run that instance.
@@ -43,12 +42,15 @@ If you wish to run the JAR file locally, you can do so by creating a 'Run JAR' c
 
 #### On IntelliJ IDEA:
 
-* Click on the '+' button in the top left corner of the Configurations window to add a new configuration.
-* In the dropdown list that appears, select the 'JAR Application' option.
-* Set the name to 'Run JAR'.
-* Provide the path to the JAR, as well as any necessary **environment variables**.
+* Click on the `+` button in the top left corner of the Configurations window to add a new configuration.
+* In the dropdown list that appears, select the `JAR Application` option.
+* Set the name to `Run JAR`.
+* Provide the path to the JAR, as well as any necessary **environment variables** (refer to the  [Setup Test Bot](https://github.com/prithvidiamond1/DiamondBot/blob/master/Other%20Documentation/Setup%20Test%20Bot/setupTestBot.md) documentation).
 * Save the configuration, select it from the configurations' dropdown menu and click the run button.
 * A window should pop-up, showing the runtime messages from the JAR application's console. If all goes smoothly, you 
-should see a 'Bot has started!' message in the console.
+should see a `Bot has started!` message in the console.
 
 If there are any runtime errors or other problems, you should see a stack trace indicating or hinting at the source of the problem. Create an issue/pull request to bring this to the notice of other contributors so that it can be resolved together.
+
+For more information about setting up a test bot for local development and hosting purposes, refer to the [Setup Test Bot](https://github.com/prithvidiamond1/DiamondBot/blob/master/Other%20Documentation/Setup%20Test%20Bot/setupTestBot.md) documentation.
+

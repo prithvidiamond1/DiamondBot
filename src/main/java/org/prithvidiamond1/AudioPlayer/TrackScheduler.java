@@ -166,6 +166,8 @@ public class TrackScheduler implements AudioEventListener {
      */
     private Runnable botDisconnect(){
         return () -> {
+            removeAudioPlayerControls(this.textChannel);    // required for the paused state
+
             try {
                 this.serverVoiceChannel.getApi().removeListener(this.playerControlsHandler);
             } catch (Exception exception){
