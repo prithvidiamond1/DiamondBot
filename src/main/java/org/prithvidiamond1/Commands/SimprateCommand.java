@@ -7,9 +7,11 @@ import org.javacord.api.entity.user.User;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandOption;
 import org.prithvidiamond1.CommandFunctions;
 import org.prithvidiamond1.Main;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -18,6 +20,12 @@ import java.util.Optional;
  * Calculates how much of a simp a person is using pseudo-RNG
  */
 public class SimprateCommand implements Command{
+    private final String name = "simprate";
+
+    private final String description = "A command that will make the bot rate how much of a simp you are!";
+
+    private final List<SlashCommandOption> slashCommandOptions = null;
+
     /**
      * the guild version of the simprate command
      * @param event the guild command trigger event
@@ -61,5 +69,20 @@ public class SimprateCommand implements Command{
                     return null;
                 })
         );
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String getDescription() {
+        return this.description;
+    }
+
+    @Override
+    public List<SlashCommandOption> getSlashCommandOptions() {
+        return this.slashCommandOptions;
     }
 }

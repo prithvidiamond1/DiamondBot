@@ -7,10 +7,12 @@ import org.javacord.api.entity.user.User;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandOption;
 import org.prithvidiamond1.CommandFunctions;
 import org.prithvidiamond1.Main;
 import org.testng.internal.collections.Pair;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -19,6 +21,11 @@ import java.util.Optional;
  * Calculates how gay a person is using pseudo-RNG
  */
 public class GayrateCommand implements Command{
+    private final String name = "gayrate";
+
+    private final String description = "A command that will make the bot rate how gay you are!";
+
+    private final List<SlashCommandOption> slashCommandOptions = null;
 
     /**
      * the guild version of the gayrate command
@@ -70,4 +77,21 @@ public class GayrateCommand implements Command{
                         })
         );
     }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String getDescription() {
+        return this.description;
+    }
+
+    @Override
+    public List<SlashCommandOption> getSlashCommandOptions() {
+        return this.slashCommandOptions;
+    }
+
+
 }

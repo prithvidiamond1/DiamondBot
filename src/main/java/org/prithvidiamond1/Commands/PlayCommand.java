@@ -17,18 +17,14 @@ import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.message.MessageCreateEvent;
-import org.javacord.api.interaction.SlashCommandInteraction;
-import org.javacord.api.interaction.SlashCommandInteractionOption;
+import org.javacord.api.interaction.*;
 import org.prithvidiamond1.AudioPlayer.AudioSourceHandler;
 import org.prithvidiamond1.AudioPlayer.PlayerAudioSource;
 import org.prithvidiamond1.AudioPlayer.Youtube.YoutubeSearchEngine;
 import org.prithvidiamond1.Main;
 import org.testng.internal.collections.Pair;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.prithvidiamond1.ServerHelperFunctions.removeAudioPlayerControls;
 import static org.prithvidiamond1.ServerHelperFunctions.resolveServerModelById;
@@ -40,10 +36,32 @@ import static org.prithvidiamond1.ServerHelperFunctions.resolveServerModelById;
  */
 public class PlayCommand implements Command {
 
+    private final String name = "play";
+
+    private final String description = "A command to play music. *_This command takes arguments_*";
+
+    private final List<SlashCommandOption> slashCommandOptions = new ArrayList<>();
+
     private ServerVoiceChannel serverVoiceChannel;
     private TextChannel textChannel;
     private AudioSourceHandler audioSourceHandler;
     private YoutubeAudioSourceManager youtubeSourceManager;
+
+    public PlayCommand(){
+        slashCommandOptions.add(SlashCommandOption.createWithChoices(
+                SlashCommandOptionType.STRING,
+                "audio-source",
+                "Name of the audio source to be searched",
+                true,
+                List.of(SlashCommandOptionChoice.create("YouTube", "youtube"))
+        ));
+        slashCommandOptions.add(SlashCommandOption.create(
+                SlashCommandOptionType.STRING,
+                "search-string",
+                "String to be searched using the set audio source",
+                true
+        ));
+    }
 
     /**
      * Method that finds a suitable server voice channel to join to
@@ -356,5 +374,20 @@ public class PlayCommand implements Command {
                         });
             }
         }
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String getDescription() {
+        return this.description;
+    }
+
+    @Override
+    public List<SlashCommandOption> getSlashCommandOptions() {
+        return this.slashCommandOptions;
     }
 }

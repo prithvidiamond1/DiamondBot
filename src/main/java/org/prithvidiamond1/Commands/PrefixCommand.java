@@ -9,8 +9,13 @@ import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
+import org.javacord.api.interaction.SlashCommandOption;
+import org.javacord.api.interaction.SlashCommandOptionType;
 import org.prithvidiamond1.DB.Models.DiscordServer;
 import org.prithvidiamond1.Main;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.prithvidiamond1.ServerHelperFunctions.resolveServerModelById;
 
@@ -20,6 +25,21 @@ import static org.prithvidiamond1.ServerHelperFunctions.resolveServerModelById;
  * Allows the user to change the guild prefix of the bot within the server
  */
 public class PrefixCommand implements Command{
+    private final String name = "prefix";
+
+    private final String description = "A command to change the guild prefix of the bot. *_This command takes arguments_*";
+
+    private final List<SlashCommandOption> slashCommandOptions = new ArrayList<>();
+
+    public PrefixCommand(){
+        slashCommandOptions.add(SlashCommandOption.create(
+                SlashCommandOptionType.STRING,
+                "prefix-string",
+                "A command to change the guild prefix of the bot",
+                true
+        ));
+    }
+
     /**
      * Method that does the core function of the prefix command
      * @param user the user calling the play command
@@ -139,5 +159,20 @@ public class PrefixCommand implements Command{
                                         return null;
                                     });
                         }));
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String getDescription() {
+        return this.description;
+    }
+
+    @Override
+    public List<SlashCommandOption> getSlashCommandOptions() {
+        return null;
     }
 }

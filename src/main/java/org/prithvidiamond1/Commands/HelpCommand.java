@@ -5,8 +5,13 @@ import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.interaction.SlashCommandInteraction;
-import org.prithvidiamond1.CommandHandler;
+import org.javacord.api.interaction.SlashCommandOption;
+import org.prithvidiamond1.Listeners.CommandHandler;
 import org.prithvidiamond1.Main;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.prithvidiamond1.ServerHelperFunctions.resolveServerModelById;
 
@@ -16,6 +21,12 @@ import static org.prithvidiamond1.ServerHelperFunctions.resolveServerModelById;
  * Displays a description of all the available bot commands
  */
 public class HelpCommand implements Command{
+    private final String name = "help";
+
+    private final String description = "A command that shows all the commands of the bot and their descriptions";
+
+    private final List<SlashCommandOption> slashCommandOptions = null;
+
     /**
      * the guild version of the help command
      * @param event the guild command trigger event
@@ -58,5 +69,20 @@ public class HelpCommand implements Command{
                             return null;
                         })
         );
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String getDescription() {
+        return this.description;
+    }
+
+    @Override
+    public List<SlashCommandOption> getSlashCommandOptions() {
+        return this.slashCommandOptions;
     }
 }

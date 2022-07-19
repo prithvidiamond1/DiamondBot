@@ -13,15 +13,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.stereotype.Component;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * The main class of the Discord bot
  */
 @SpringBootApplication
+@EnableMongoRepositories
 public class Main {
     /**
      * The bot's accent color (currently a shade of cyan)
@@ -78,84 +85,84 @@ public class Main {
         AlreadyConnected
     }
 
-    /**
-     * The command handler instance
-     */
-    @Autowired
-    private CommandHandler commandHandler;
-
-    /**
-     * The server join handler instance
-     */
-    @Autowired
-    private ServerJoinHandler serverJoinHandler;
-
-    /**
-     * The server leave handler instance
-     */
-    @Autowired
-    private ServerLeaveHandler serverLeaveHandler;
+//    /**
+//     * The command handler instance
+//     */
+//    @Autowired
+//    private CommandHandler commandHandler;
+//
+//    /**
+//     * The server join handler instance
+//     */
+//    @Autowired
+//    private ServerJoinHandler serverJoinHandler;
+//
+//    /**
+//     * The server leave handler instance
+//     */
+//    @Autowired
+//    private ServerLeaveHandler serverLeaveHandler;
 
     /**
      * Constructor for the Main class
      * @param discordServerRepo the backend MongoDB repository used for storing Discord server preferences
      */
-    public Main(DiscordServerRepository discordServerRepo) {
-        discordServerRepository = discordServerRepo;
-    }
+//    public Main(DiscordServerRepository discordServerRepo) {
+//        discordServerRepository = discordServerRepo;
+//    }
 
     /**
      * Method that runs the Discord bot instance
      * @return the Discord API instance used by the bot which is then dependency injected using SpringBoot
      */
-    @Bean
-    @ConfigurationProperties(value = "discord-api")
-    public DiscordApi discordApi() {
-
-        String botToken = System.getenv().get("BOT_TOKEN");
-
-        DiscordApi api = new DiscordApiBuilder()
-                .setToken(botToken)
-                .setAllIntents()
-                .setWaitForServersOnStartup(true)
-                .setWaitForUsersOnStartup(true)
-                .login().exceptionally(exception -> {    // Error message for any failed actions from the above
-                    logger.error("Error setting up DiscordApi instance!");
-                    logger.error(exception.getMessage());
-                    return null;
-                })
-                .join();
-
-        logger.info("Bot has started!");
-
-        // Handling server entries in the database
-        if (discordServerRepository.findAll().isEmpty()) {
-            logger.trace("Bot server data repository empty, initializing data repository...");
-            Collection<Server> servers = api.getServers();
-            for (Server server : servers) {
-                discordServerRepository.save(new DiscordServer(String.valueOf(server.getId()), defaultGuildPrefix));
-            }
-            logger.trace("Bot server data repository initialized");
-        }
-
-        // Server join and leave handlers
-        api.addServerJoinListener(serverJoinHandler);
-        api.addServerLeaveListener(serverLeaveHandler);
-
-        // Commands
-        CommandRegister.run(api, commandHandler);
-
-        // Self mention listener
-        AuxiliaryListeners.selfMentionListener(api);
-
-        return api;
-    }
+//    @Bean
+//    @ConfigurationProperties(value = "discord-api")
+//    public void discordApi() {
+//
+//        String botToken = System.getenv().get("BOT_TOKEN");
+//
+//        DiscordApi api = new DiscordApiBuilder()
+//                .setToken(botToken)
+//                .setAllIntents()
+//                .setWaitForServersOnStartup(true)
+//                .setWaitForUsersOnStartup(true)
+//                .login().exceptionally(exception -> {    // Error message for any failed actions from the above
+//                    logger.error("Error setting up DiscordApi instance!");
+//                    logger.error(exception.getMessage());
+//                    return null;
+//                })
+//                .join();
+//
+//        logger.info("Bot has started!");
+//
+//        // Handling server entries in the database
+//        if (discordServerRepository.findAll().isEmpty()) {
+//            logger.trace("Bot server data repository empty, initializing data repository...");
+//            Collection<Server> servers = api.getServers();
+//            for (Server server : servers) {
+//                discordServerRepository.save(new DiscordServer(String.valueOf(server.getId()), defaultGuildPrefix));
+//            }
+//            logger.trace("Bot server data repository initialized");
+//        }
+//
+//        // Server join and leave handlers
+//        api.addServerJoinListener(serverJoinHandler);
+//        api.addServerLeaveListener(serverLeaveHandler);
+//
+//        // Commands
+//        CommandRegister.run(api, commandHandler);
+//
+//        // Self mention listener
+//        AuxiliaryListeners.selfMentionListener(api);
+//
+////        return api;
+//    }
 
     /**
      * The start point for the Discord bot application
      * @param args command line arguments
      */
     public static void main(String[] args) {
-        SpringApplication.run(Main.class, args);
+        ApplicationContext AppContext = SpringApplication.run(BotApplication.class, args);
     }
 }

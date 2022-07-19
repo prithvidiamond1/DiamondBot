@@ -6,8 +6,10 @@ import org.javacord.api.entity.server.Server;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandOption;
 import org.prithvidiamond1.Main;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,6 +18,13 @@ import java.util.Optional;
  * Pings the bot for a greeting!
  */
 public class PingCommand implements Command{
+
+    private final String name = "ping";
+
+    private final String description = "A command that will make the bot greet you!";
+
+    private final List<SlashCommandOption> slashCommandOptions = null;
+
     /**
      * the guild version of the ping command
      * @param event the guild command trigger event
@@ -54,5 +63,20 @@ public class PingCommand implements Command{
                     return null;
                 })
         );
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String getDescription() {
+        return this.description;
+    }
+
+    @Override
+    public List<SlashCommandOption> getSlashCommandOptions() {
+        return this.slashCommandOptions;
     }
 }
