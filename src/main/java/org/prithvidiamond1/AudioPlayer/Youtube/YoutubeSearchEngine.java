@@ -2,32 +2,33 @@ package org.prithvidiamond1.AudioPlayer.Youtube;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.*;
-import org.prithvidiamond1.Main;
+import org.prithvidiamond1.BotConstants;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.List;
 
 /**
  * Class that implements methods for using the YouTube Search Engine API
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class YoutubeSearchEngine {
     /**
      * The YouTube service API instance
      */
-    public YouTube youtube;
+    private final YouTube youtube;
+    private final Logger logger;
 
     /**
      * Constructor that initializes the search engine API service
      */
-    public YoutubeSearchEngine(){
-        try {
-            this.youtube = YoutubeSearchEngineInitializer.getService();
-        } catch (GeneralSecurityException | IOException exception) {
-            Main.logger.error("Error trying to initialize Youtube Search Engine object!");
-            Main.logger.error(exception.getMessage());
-            this.youtube = null;
-        }
+    public YoutubeSearchEngine(Logger logger, YouTube youtube){
+        this.logger = logger;
+        this.youtube = youtube;
     }
 
     /**
@@ -43,11 +44,11 @@ public class YoutubeSearchEngine {
             searchRequest = this.youtube.search().list(List.of("snippet"));
             searchResponse = searchRequest.setMaxResults(25L)
                     .setQ(searchString)
-                    .setKey(Main.youtubeApiKey)
+                    .setKey(BotConstants.youtubeApiKey)
                     .execute();
         } catch (IOException exception) {
-            Main.logger.error("Error trying to search Youtube!");
-            Main.logger.error(exception.getMessage());
+            this.logger.error("Error trying to search Youtube!");
+            this.logger.error(exception.getMessage());
         }
 
         assert searchResponse != null;
@@ -66,11 +67,11 @@ public class YoutubeSearchEngine {
             request = this.youtube.videos().list(List.of("snippet"));
             response = request.setMaxResults(1L)
                     .setId(List.of(videoId))
-                    .setKey(Main.youtubeApiKey)
+                    .setKey(BotConstants.youtubeApiKey)
                     .execute();
         } catch (IOException exception) {
-            Main.logger.error("Error trying to retrieve Youtube API VideoListResponse!");
-            Main.logger.error(exception.getMessage());
+            this.logger.error("Error trying to retrieve Youtube API VideoListResponse!");
+            this.logger.error(exception.getMessage());
         }
         assert response != null;
         Video result = response.getItems().get(0);

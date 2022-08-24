@@ -11,27 +11,34 @@ import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
+import org.prithvidiamond1.BotConstants;
 import org.prithvidiamond1.DB.Models.DiscordServer;
-import org.prithvidiamond1.Main;
+import org.prithvidiamond1.DB.Repositories.ServerRepository.ServerRepository;
+import org.slf4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.prithvidiamond1.ServerHelperFunctions.resolveServerModelById;
 
 /**
  * This class contains the actions of the prefix command
  * <br>
  * Allows the user to change the guild prefix of the bot within the server
  */
-public class PrefixCommand implements Command{
+@Component
+public class PrefixCommand extends BaseCommand {
     private final String name = "prefix";
 
     private final String description = "A command to change the guild prefix of the bot. *_This command takes arguments_*";
 
     private final List<SlashCommandOption> slashCommandOptions = new ArrayList<>();
 
-    public PrefixCommand(){
+    private final ServerRepository serverRepository;
+
+    public PrefixCommand(Logger logger, ServerRepository serverRepository){
+        super(logger);
+        this.serverRepository = serverRepository;
+
         slashCommandOptions.add(SlashCommandOption.create(
                 SlashCommandOptionType.STRING,
                 "prefix-string",
@@ -50,18 +57,18 @@ public class PrefixCommand implements Command{
     private EmbedBuilder commandFunction(User user, Server server, String validatedPrefix){
         EmbedBuilder response;
         if (!user.isBot() && server.isAdmin(user)) {
-            DiscordServer serverModel = resolveServerModelById(server);
+            DiscordServer serverModel = this.serverRepository.resolveServerModelById(server);
             serverModel.setGuildPrefix(validatedPrefix);
-            Main.discordServerRepository.save(serverModel);
+            this.serverRepository.save(serverModel);
             response = new EmbedBuilder()
                     .setTitle("Guild Command Prefix Changed!")
                     .setDescription(String.format("Guild prefix has been set to **%s**", validatedPrefix))
-                    .setColor(Main.botAccentColor);
+                    .setColor(BotConstants.botAccentColor);
         } else {
             response = new EmbedBuilder()
                     .setTitle("You cannot change guild command prefixes for this server!")
                     .setDescription("You do not have the required permissions for this action! Contact a server admin and request for a change")
-                    .setColor(Main.botAccentColor);
+                    .setColor(BotConstants.botAccentColor);
         }
 
         return response;
@@ -90,7 +97,7 @@ public class PrefixCommand implements Command{
             throw new NullPointerException("Server was null");
         }
 
-        DiscordServer serverModel = resolveServerModelById(server);
+        DiscordServer serverModel = this.serverRepository.resolveServerModelById(server);
         String currentPrefix = serverModel.getGuildPrefix();
 
         String unvalidatedNewPrefix = message.substring((currentPrefix.length())+("prefix".length())).strip();
@@ -105,11 +112,11 @@ public class PrefixCommand implements Command{
                             new EmbedBuilder()
                                     .setTitle("Prefix Command")
                                     .setDescription(String.format("To use the prefix command, type **%sprefix \"<NEW_PREFIX>\"**\nNote that the new prefix cannot be a blank string or one with only white spaces", currentPrefix))
-                                    .setColor(Main.botAccentColor))
+                                    .setColor(BotConstants.botAccentColor))
                     .send(event.getChannel())
                     .exceptionally(exception -> {   // Error message for failing to respond to the guild command
-                        Main.logger.error("Unable to respond to the guild command!");
-                        Main.logger.error(exception.getMessage());
+                        getLogger().error("Unable to respond to the guild command!");
+                        getLogger().error(exception.getMessage());
                         return null;
                     });
         } else{
@@ -119,11 +126,11 @@ public class PrefixCommand implements Command{
                                 new EmbedBuilder()
                                         .setTitle("Blank text cannot be set as a prefix!")
                                         .setDescription("Make sure to set a prefix that is not blank by following the correct syntax")
-                                        .setColor(Main.botAccentColor))
+                                        .setColor(BotConstants.botAccentColor))
                         .send(event.getChannel())
                         .exceptionally(exception -> {   // Error message for failing to respond to the guild command
-                            Main.logger.error("Unable to respond to the guild command!");
-                            Main.logger.error(exception.getMessage());
+                            getLogger().error("Unable to respond to the guild command!");
+                            getLogger().error(exception.getMessage());
                             return null;
                         });
             } else {
@@ -131,8 +138,8 @@ public class PrefixCommand implements Command{
                 new MessageBuilder().setEmbed(response)
                         .send(event.getChannel())
                         .exceptionally(exception -> { // Error message for failing to respond to the guild command
-                            Main.logger.error("Unable to respond to the guild command!");
-                            Main.logger.error(exception.getMessage());
+                            getLogger().error("Unable to respond to the guild command!");
+                            getLogger().error(exception.getMessage());
                             return null;
                         });
             }
@@ -154,8 +161,8 @@ public class PrefixCommand implements Command{
                             slashCommandInteraction.createImmediateResponder().addEmbed(response)
                                     .respond()
                                     .exceptionally(exception -> {   // Error message for failing to respond to the slash command interaction
-                                        Main.logger.error("Unable to respond to the slash command interaction");
-                                        Main.logger.error(exception.getMessage());
+                                        getLogger().error("Unable to respond to the slash command interaction");
+                                        getLogger().error(exception.getMessage());
                                         return null;
                                     });
                         }));

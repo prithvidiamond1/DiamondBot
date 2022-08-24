@@ -3,6 +3,7 @@ package org.prithvidiamond1.Commands;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.interaction.SlashCommandOption;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -40,4 +41,6 @@ public interface Command {
      * @return the command's slash command options
      */
     List<SlashCommandOption> getSlashCommandOptions();
+
+    Logger getLogger();
 }

@@ -7,7 +7,9 @@ import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandOption;
-import org.prithvidiamond1.Main;
+import org.prithvidiamond1.BotConstants;
+import org.slf4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,13 +19,18 @@ import java.util.Optional;
  * <br>
  * Pings the bot for a greeting!
  */
-public class PingCommand implements Command{
+@Component
+public class PingCommand extends BaseCommand{
 
     private final String name = "ping";
 
     private final String description = "A command that will make the bot greet you!";
 
     private final List<SlashCommandOption> slashCommandOptions = null;
+
+    public PingCommand(Logger logger) {
+        super(logger);
+    }
 
     /**
      * the guild version of the ping command
@@ -34,11 +41,11 @@ public class PingCommand implements Command{
         new MessageBuilder().setEmbed(new EmbedBuilder()
                         .setTitle(String.format("Hello %s!", event.getMessageAuthor().getDisplayName()))
                         .setThumbnail(event.getMessageAuthor().getAvatar())
-                        .setColor(Main.botAccentColor))
+                        .setColor(BotConstants.botAccentColor))
                 .send(event.getChannel())
                 .exceptionally(exception -> {   // Error message for failing to respond to the guild command
-                    Main.logger.error("Unable to respond to the guild command!");
-                    Main.logger.error(exception.getMessage());
+                    getLogger().error("Unable to respond to the guild command!");
+                    getLogger().error(exception.getMessage());
                     return null;
                 });
     }
@@ -55,11 +62,11 @@ public class PingCommand implements Command{
                 .addEmbed(new EmbedBuilder()
                         .setTitle(String.format("Hello %s!", slashCommandInteraction.getUser().getDisplayName(server.get())))
                         .setThumbnail(slashCommandInteraction.getUser().getAvatar())
-                        .setColor(Main.botAccentColor))
+                        .setColor(BotConstants.botAccentColor))
                 .respond()
                 .exceptionally(exception -> {   // Error message for failing to respond to the slash command interaction
-                    Main.logger.error("Unable to respond to the slash command interaction");
-                    Main.logger.error(exception.getMessage());
+                    getLogger().error("Unable to respond to the slash command interaction");
+                    getLogger().error(exception.getMessage());
                     return null;
                 })
         );

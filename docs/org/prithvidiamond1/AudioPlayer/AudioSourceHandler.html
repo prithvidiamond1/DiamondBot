@@ -71,7 +71,7 @@ loadScripts(document, 'script');</script>
 <h1 title="Class AudioSourceHandler" class="title">Class AudioSourceHandler</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance">org.prithvidiamond1.AudioPlayer.AudioSourceHandler</div>
+<div class="inheritance">org.prithvidiamond1.AudioPlayer.AudioSourceLoader</div>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
@@ -96,7 +96,7 @@ implements com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler</span>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>final <a href="PlayerAudioSource.html" title="class in org.prithvidiamond1.AudioPlayer">PlayerAudioSource</a></code></div>
-<div class="col-second even-row-color"><code><a href="#playerAudioSource" class="member-name-link">playerAudioSource</a></code></div>
+<div class="col-second even-row-color"><code><a href="#audioSource" class="member-name-link">audioSource</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">The audio source to which the audio player is connected to</div>
 </div>
@@ -111,7 +111,7 @@ implements com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler</span>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(org.prithvidiamond1.AudioPlayer.PlayerAudioSource)" class="member-name-link">AudioSourceHandler</a><wbr>(<a href="PlayerAudioSource.html" title="class in org.prithvidiamond1.AudioPlayer">PlayerAudioSource</a>&nbsp;playerAudioSource)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(org.prithvidiamond1.AudioPlayer.AudioSourceImpl)" class="member-name-link">AudioSourceHandler</a><wbr>(<a href="PlayerAudioSource.html" title="class in org.prithvidiamond1.AudioPlayer">PlayerAudioSource</a>&nbsp;audioSource)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Constructor for this class</div>
 </div>
@@ -167,9 +167,9 @@ implements com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler</span>
 <h2>Field Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="playerAudioSource">
-<h3>playerAudioSource</h3>
-<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="PlayerAudioSource.html" title="class in org.prithvidiamond1.AudioPlayer">PlayerAudioSource</a></span>&nbsp;<span class="element-name">playerAudioSource</span></div>
+<section class="detail" id="audioSource">
+<h3>audioSource</h3>
+<div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="PlayerAudioSource.html" title="class in org.prithvidiamond1.AudioPlayer">PlayerAudioSource</a></span>&nbsp;<span class="element-name">audioSource</span></div>
 <div class="block">The audio source to which the audio player is connected to</div>
 </section>
 </li>
@@ -182,13 +182,13 @@ implements com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler</span>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(org.prithvidiamond1.AudioPlayer.PlayerAudioSource)">
+<section class="detail" id="&lt;init&gt;(org.prithvidiamond1.AudioPlayer.AudioSourceImpl)">
 <h3>AudioSourceHandler</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">AudioSourceHandler</span><wbr><span class="parameters">(<a href="PlayerAudioSource.html" title="class in org.prithvidiamond1.AudioPlayer">PlayerAudioSource</a>&nbsp;playerAudioSource)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">AudioSourceHandler</span><wbr><span class="parameters">(<a href="PlayerAudioSource.html" title="class in org.prithvidiamond1.AudioPlayer">PlayerAudioSource</a>&nbsp;audioSource)</span></div>
 <div class="block">Constructor for this class</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>playerAudioSource</code> - an audio source for this audio source handler</dd>
+<dd><code>audioSource</code> - an audio source for this audio source handler</dd>
 </dl>
 </section>
 </li>

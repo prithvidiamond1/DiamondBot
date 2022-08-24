@@ -60,11 +60,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Method to add an option with option choices to the slash command</div>
 </dd>
-<dt><a href="org/prithvidiamond1/AudioPlayer/PlayerAudioSource.html#addPlayerControlsHandler(org.prithvidiamond1.AudioPlayer.PlayerControlsHandler)" class="member-name-link">addPlayerControlsHandler(PlayerControlsHandler)</a> - Method in class org.prithvidiamond1.AudioPlayer.<a href="org/prithvidiamond1/AudioPlayer/PlayerAudioSource.html" title="class in org.prithvidiamond1.AudioPlayer">PlayerAudioSource</a></dt>
+<dt><a href="org/prithvidiamond1/AudioPlayer/PlayerAudioSource.html#addPlayerControlsHandler(org.prithvidiamond1.AudioPlayer.PlayerControlsListener)" class="member-name-link">addPlayerControlsHandler(PlayerControlsHandler)</a> - Method in class org.prithvidiamond1.AudioPlayer.<a href="org/prithvidiamond1/AudioPlayer/PlayerAudioSource.html" title="class in org.prithvidiamond1.AudioPlayer">PlayerAudioSource</a></dt>
 <dd>
 <div class="block">Method to link a player controls handler to this player audio source's track scheduler</div>
 </dd>
-<dt><a href="org/prithvidiamond1/AudioPlayer/TrackScheduler.html#addPlayerControlsHandler(org.prithvidiamond1.AudioPlayer.PlayerControlsHandler)" class="member-name-link">addPlayerControlsHandler(PlayerControlsHandler)</a> - Method in class org.prithvidiamond1.AudioPlayer.<a href="org/prithvidiamond1/AudioPlayer/TrackScheduler.html" title="class in org.prithvidiamond1.AudioPlayer">TrackScheduler</a></dt>
+<dt><a href="org/prithvidiamond1/AudioPlayer/TrackScheduler.html#addPlayerControlsHandler(org.prithvidiamond1.AudioPlayer.PlayerControlsListener)" class="member-name-link">addPlayerControlsHandler(PlayerControlsHandler)</a> - Method in class org.prithvidiamond1.AudioPlayer.<a href="org/prithvidiamond1/AudioPlayer/TrackScheduler.html" title="class in org.prithvidiamond1.AudioPlayer">TrackScheduler</a></dt>
 <dd>
 <div class="block">Method to link a player controls handler to the audio player's track scheduler</div>
 </dd>
@@ -92,7 +92,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Class that handles the player source and its related functions such track and playlist loading.</div>
 </dd>
-<dt><a href="org/prithvidiamond1/AudioPlayer/AudioSourceHandler.html#%3Cinit%3E(org.prithvidiamond1.AudioPlayer.PlayerAudioSource)" class="member-name-link">AudioSourceHandler(PlayerAudioSource)</a> - Constructor for class org.prithvidiamond1.AudioPlayer.<a href="org/prithvidiamond1/AudioPlayer/AudioSourceHandler.html" title="class in org.prithvidiamond1.AudioPlayer">AudioSourceHandler</a></dt>
+<dt><a href="org/prithvidiamond1/AudioPlayer/AudioSourceHandler.html#%3Cinit%3E(org.prithvidiamond1.AudioPlayer.AudioSourceImpl)" class="member-name-link">AudioSourceHandler(PlayerAudioSource)</a> - Constructor for class org.prithvidiamond1.AudioPlayer.<a href="org/prithvidiamond1/AudioPlayer/AudioSourceHandler.html" title="class in org.prithvidiamond1.AudioPlayer">AudioSourceHandler</a></dt>
 <dd>
 <div class="block">Constructor for this class</div>
 </dd>
@@ -306,7 +306,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The main class of the Discord bot</div>
 </dd>
-<dt><a href="org/prithvidiamond1/Main.html#%3Cinit%3E(org.prithvidiamond1.DB.Repositories.DiscordServerRepository)" class="member-name-link">Main(DiscordServerRepository)</a> - Constructor for class org.prithvidiamond1.<a href="org/prithvidiamond1/Main.html" title="class in org.prithvidiamond1">Main</a></dt>
+<dt><a href="org/prithvidiamond1/Main.html#%3Cinit%3E(org.prithvidiamond1.DB.Repositories.ServerRepository.ServerRepository)" class="member-name-link">Main(DiscordServerRepository)</a> - Constructor for class org.prithvidiamond1.<a href="org/prithvidiamond1/Main.html" title="class in org.prithvidiamond1">Main</a></dt>
 <dd>
 <div class="block">Constructor for the Main class</div>
 </dd>
@@ -391,7 +391,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The <code>ActionRow</code> that contains the audio player control buttons</div>
 </dd>
-<dt><a href="org/prithvidiamond1/AudioPlayer/AudioSourceHandler.html#playerAudioSource" class="member-name-link">playerAudioSource</a> - Variable in class org.prithvidiamond1.AudioPlayer.<a href="org/prithvidiamond1/AudioPlayer/AudioSourceHandler.html" title="class in org.prithvidiamond1.AudioPlayer">AudioSourceHandler</a></dt>
+<dt><a href="org/prithvidiamond1/AudioPlayer/AudioSourceHandler.html#audioSource" class="member-name-link">audioSource</a> - Variable in class org.prithvidiamond1.AudioPlayer.<a href="org/prithvidiamond1/AudioPlayer/AudioSourceHandler.html" title="class in org.prithvidiamond1.AudioPlayer">AudioSourceHandler</a></dt>
 <dd>
 <div class="block">The audio source to which the audio player is connected to</div>
 </dd>
@@ -407,7 +407,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">This class contains methods and fields for handling the audio player controls from the user's end</div>
 </dd>
-<dt><a href="org/prithvidiamond1/AudioPlayer/PlayerControlsHandler.html#%3Cinit%3E(org.prithvidiamond1.AudioPlayer.AudioSourceHandler)" class="member-name-link">PlayerControlsHandler(AudioSourceHandler)</a> - Constructor for class org.prithvidiamond1.AudioPlayer.<a href="org/prithvidiamond1/AudioPlayer/PlayerControlsHandler.html" title="class in org.prithvidiamond1.AudioPlayer">PlayerControlsHandler</a></dt>
+<dt><a href="org/prithvidiamond1/AudioPlayer/PlayerControlsHandler.html#%3Cinit%3E(org.prithvidiamond1.AudioPlayer.AudioSourceLoader)" class="member-name-link">PlayerControlsHandler(AudioSourceHandler)</a> - Constructor for class org.prithvidiamond1.AudioPlayer.<a href="org/prithvidiamond1/AudioPlayer/PlayerControlsHandler.html" title="class in org.prithvidiamond1.AudioPlayer">PlayerControlsHandler</a></dt>
 <dd>
 <div class="block">Simple constructor for initializing the PlayerControlsHandler</div>
 </dd>

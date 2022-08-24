@@ -39,6 +39,7 @@ public class CommandFunctions {
      * @param video the video snippet
      * @return a string containing the url of the YouTube video
      */
+    @Deprecated
     public static String getYoutubeVideoUrl(VideoSnippet video){
         Thumbnail thumbnail = video.getThumbnails().getStandard();
         String thumbnailUrl = "https://i.imgur.com/OkGXI5L.png"; // replacement image.

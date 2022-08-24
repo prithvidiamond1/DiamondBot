@@ -8,8 +8,10 @@ import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandOption;
+import org.prithvidiamond1.BotConstants;
 import org.prithvidiamond1.CommandFunctions;
-import org.prithvidiamond1.Main;
+import org.slf4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,12 +21,17 @@ import java.util.Optional;
  * <br>
  * Calculates how much of a simp a person is using pseudo-RNG
  */
-public class SimprateCommand implements Command{
+@Component
+public class SimprateCommand extends BaseCommand {
     private final String name = "simprate";
 
     private final String description = "A command that will make the bot rate how much of a simp you are!";
 
     private final List<SlashCommandOption> slashCommandOptions = null;
+
+    public SimprateCommand(Logger logger) {
+        super(logger);
+    }
 
     /**
      * the guild version of the simprate command
@@ -37,11 +44,11 @@ public class SimprateCommand implements Command{
                         .setAuthor(event.getMessageAuthor())
                         .setTitle("Simp Calculator")
                         .setDescription(String.format("%s is **%d%%** simp", event.getMessageAuthor().getDisplayName(), rate))
-                        .setColor(Main.botAccentColor))
+                        .setColor(BotConstants.botAccentColor))
                 .send(event.getChannel())
                 .exceptionally(exception -> {   // Error message for failing to respond to the guild command
-                    Main.logger.error("Unable to respond to the guild command!");
-                    Main.logger.error(exception.getMessage());
+                    getLogger().error("Unable to respond to the guild command!");
+                    getLogger().error(exception.getMessage());
                     return null;
                 });
     }
@@ -61,11 +68,11 @@ public class SimprateCommand implements Command{
                         .setAuthor(user)
                         .setTitle("Simp Calculator")
                         .setDescription(String.format("%s is **%d%%** simp", user.getDisplayName(server.get()), rate))
-                        .setColor(Main.botAccentColor))
+                        .setColor(BotConstants.botAccentColor))
                 .respond()
                 .exceptionally(exception -> {   // Error message for failing to respond to the slash command
-                    Main.logger.error("Unable to respond to the slash command!");
-                    Main.logger.error(exception.getMessage());
+                    getLogger().error("Unable to respond to the slash command!");
+                    getLogger().error(exception.getMessage());
                     return null;
                 })
         );
