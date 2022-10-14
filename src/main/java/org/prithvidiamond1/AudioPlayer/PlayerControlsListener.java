@@ -40,12 +40,19 @@ public class PlayerControlsListener implements MessageComponentCreateListener {
             Button.danger("ClearTrackQueue", "Clear Track Queue")
     );
 
+    public final static ActionRow audioPlayerActionRowWithoutPlayPause = ActionRow.of(
+            Button.secondary("SkipToPreviousTrack", "Skip to previous track ⏮"),
+            Button.secondary("SkipToNextTrack", "Skip to next track ⏭"),
+            Button.primary("ViewFullTrackQueue", "View Full Track Queue"),
+            Button.danger("ClearTrackQueue", "Clear Track Queue")
+    );
+
     /**
      * Simple constructor for initializing the PlayerControlsHandler
      *
-     * @param logger
-     * @param audioPlayer
-     * @param trackQueuer
+     * @param logger the logger instance
+     * @param audioPlayer the audio player instance
+     * @param trackQueuer the track queuer instance
      */
     public PlayerControlsListener(Logger logger, AudioPlayer audioPlayer, AudioTrackQueuer trackQueuer) {
         this.logger = logger;

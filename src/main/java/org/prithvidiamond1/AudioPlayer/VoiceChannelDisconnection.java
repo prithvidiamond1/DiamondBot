@@ -55,6 +55,18 @@ public class VoiceChannelDisconnection {
                 this.logger.error(exception.getMessage());
             }
 
+            AudioSystemMessenger audioSystemMessenger = this.appContext.getBean(AudioSystemMessenger.class);
+            if (audioSystemMessenger.getLastMessageWithComponents() != null){
+                //remove components from the message
+                audioSystemMessenger.getLastMessageWithComponents().createUpdater()
+                        .removeAllComponents()
+                        .applyChanges().exceptionally(exception -> {
+                            this.logger.error("Unable to remove player controls from the last sent embed!");
+                            this.logger.error(exception.getMessage());
+                            return null;
+                        });
+            }
+
             voiceChannel.disconnect()
                     .exceptionally(exception -> {
                         this.logger.error("An error occurred when trying to disconnect from a voice channel");
@@ -65,7 +77,7 @@ public class VoiceChannelDisconnection {
     }
 
     @Component
-    private static class ScheduledExecutorServiceFactory{
+    public static class ScheduledExecutorServiceFactory{
         @Bean
         @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
         public ScheduledExecutorService generateTaskScheduler(){

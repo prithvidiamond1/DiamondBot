@@ -1,5 +1,7 @@
 package org.prithvidiamond1.AudioPlayer;
 
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
 import org.javacord.api.entity.channel.TextChannel;
@@ -8,18 +10,23 @@ import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.listener.message.MessageCreateListener;
+import org.prithvidiamond1.AudioPlayer.Sources.AudioSourceEngine;
+import org.prithvidiamond1.AudioPlayer.Sources.Youtube.YoutubeSourceEngine;
 import org.prithvidiamond1.BotConstants;
 import org.slf4j.Logger;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AudioSystemMessenger implements MessageCreateListener {
     private final Logger logger;
+    private final ApplicationContext appContext;
 
     private Message lastMessageWithComponents;
 
-    public AudioSystemMessenger(Logger logger) {
+    public AudioSystemMessenger(Logger logger, ApplicationContext appContext) {
         this.logger = logger;
+        this.appContext = appContext;
     }
 
     public Message getLastMessageWithComponents() {
@@ -77,6 +84,29 @@ public class AudioSystemMessenger implements MessageCreateListener {
                 .setDescription(String.format("Adding Track to Queue - %s", newTrack.getInfo().title))
                 .setColor(BotConstants.botAccentColor)
                 .setThumbnail(BotConstants.botIconURL))
+                .addComponents(PlayerControlsListener.audioPlayerActionRow)
+                .send(textChannel).exceptionally(exception -> {
+                    this.logger.error("Unable to respond to play command!");
+                    this.logger.error(exception.getMessage());
+                    return null;
+                });
+    }
+
+    public void playingTrackMessage(TextChannel textChannel, AudioTrack track, AudioSourceManager sourceManager){
+        AudioSourceEngine sourceEngine = null;
+
+        //need to determine source
+        if (sourceManager instanceof YoutubeAudioSourceManager){
+            sourceEngine = this.appContext.getBean(YoutubeSourceEngine.class);
+        }
+
+        assert sourceEngine != null;
+        new MessageBuilder().addEmbed(
+                new EmbedBuilder().setTitle("Playing")
+                .setDescription(track.getInfo().title)
+                .setColor(BotConstants.botAccentColor)
+                .setThumbnail(sourceEngine.getThumbnailUrl(track.getIdentifier()))) // track ThumbnailUrl
+                .addComponents(PlayerControlsListener.audioPlayerActionRow)
                 .send(textChannel).exceptionally(exception -> {
                     this.logger.error("Unable to respond to play command!");
                     this.logger.error(exception.getMessage());
@@ -86,6 +116,9 @@ public class AudioSystemMessenger implements MessageCreateListener {
 
     @Override
     public void onMessageCreate(MessageCreateEvent event) {
+
+//        this.logger.info(String.format("%s - %s", event.getMessage(), event.getMessageAuthor().getName()));
+
         if (getLastMessageWithComponents() != null){
             //remove components from the message.
             getLastMessageWithComponents().createUpdater().removeAllComponents()
@@ -94,11 +127,12 @@ public class AudioSystemMessenger implements MessageCreateListener {
                         this.logger.error(exception.getMessage());
                         return null;
                     });
-        } else {
-            throw new NullPointerException("getLastMessageWithComponents returned null!");
         }
 
-        if (event.getMessageAuthor().isYourself()){
+//        this.logger.info(String.format("%s: Bot id - %d", event.getMessage(), event.getMessageAuthor().getId()));
+//        this.logger.info(String.format("Bot id from api - %d, is it a match: %b", event.getApi().getClientId(), event.getApi().getClientId()==event.getMessageAuthor().getId()));
+
+        if (event.getApi().getClientId() == event.getMessageAuthor().getId()){
             if (!event.getMessage().getComponents().isEmpty()) {
                 setLastMessageWithComponents(event.getMessage());
             }

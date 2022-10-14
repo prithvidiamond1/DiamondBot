@@ -17,7 +17,7 @@ public class SourceManagerFactory {
         this.logger = logger;
     }
 
-    @Bean
+    @Bean(name = "youtubeAudioSourceManager")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) // this could be a singleton
     public AudioSourceManager generateYoutubeSourceManager(){
         return new YoutubeAudioSourceManager();

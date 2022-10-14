@@ -2,12 +2,16 @@ package org.prithvidiamond1.AudioPlayer.EventListener;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.*;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
+import org.javacord.api.entity.channel.TextChannel;
+import org.prithvidiamond1.AudioPlayer.AudioPlayerConnectionConfig;
+import org.prithvidiamond1.AudioPlayer.AudioSystemMessenger;
+import org.prithvidiamond1.AudioPlayer.PlayerControlsListener;
 import org.prithvidiamond1.AudioPlayer.TrackQueuer.AudioTrackQueuer;
-import org.prithvidiamond1.AudioPlayer.TrackQueuer.AudioTrackQueuerImpl;
 import org.prithvidiamond1.AudioPlayer.VoiceChannelDisconnection;
 import org.prithvidiamond1.Commands.PlayCommand;
 import org.slf4j.Logger;
@@ -23,31 +27,30 @@ public class AudioEventListenerImpl implements AudioEventListener {
     /**
      * The audio player instance that connects with the {@link AudioEventListenerImpl}
      */
-    private final AudioPlayer audioPlayer;
     private final Logger logger;
     private final ApplicationContext appContext;
     private final VoiceChannelDisconnection channelDisconnection;
+    private final AudioPlayerConnectionConfig connectionConfig;
 
     /**
      * A simple constructor for the track scheduler
      *
-     * @param audioPlayer          the audio player to be linked to this track scheduler
      * @param appContext           the application context object provided by Spring
      * @param channelDisconnection the channel disconnection object
+     * @param connectionConfig     the audio player connection config object that contains current connection and source info
      */
-    public AudioEventListenerImpl(Logger logger, AudioPlayer audioPlayer, ApplicationContext appContext, VoiceChannelDisconnection channelDisconnection) {
+    public AudioEventListenerImpl(Logger logger, ApplicationContext appContext, VoiceChannelDisconnection channelDisconnection, AudioPlayerConnectionConfig connectionConfig) {
         this.logger = logger;
-        this.audioPlayer = audioPlayer;
         this.appContext = appContext;
         this.channelDisconnection = channelDisconnection;
+        this.connectionConfig = connectionConfig;
     }
     
     /**
      * Method that runs when the linked audio player is paused
      */
     private void onPlayerPause() {
-        PlayCommand playCommand = this.appContext.getBean(PlayCommand.class);
-        ServerVoiceChannel voiceChannel = playCommand.getVoiceChannel();
+        ServerVoiceChannel voiceChannel = connectionConfig.getVoiceChannel();
         this.channelDisconnection.startBotDisconnectTimer(voiceChannel);
     }
 
@@ -64,6 +67,12 @@ public class AudioEventListenerImpl implements AudioEventListener {
      */
     private void onTrackStart(AudioTrack track) {
         AudioTrackQueuer trackQueuer = this.appContext.getBean(AudioTrackQueuer.class);
+        AudioSystemMessenger audioSystemMessenger = this.appContext.getBean(AudioSystemMessenger.class);
+        TextChannel textChannel = connectionConfig.getTextChannel();
+        AudioSourceManager audioSourceManager = connectionConfig.getCurrentSourceManager();
+
+        audioSystemMessenger.playingTrackMessage(textChannel, track, audioSourceManager);
+
         if (trackQueuer.getQueueSize() == 0){
             this.channelDisconnection.stopBotDisconnectTimer();
         }
@@ -76,16 +85,28 @@ public class AudioEventListenerImpl implements AudioEventListener {
      */
     private void onTrackEnd(AudioTrack track, AudioTrackEndReason endReason) {
         AudioTrackQueuer trackQueuer = this.appContext.getBean(AudioTrackQueuer.class);
+        AudioPlayer audioPlayer = this.appContext.getBean(AudioPlayer.class);
         trackQueuer.setLastPlayedTrack(track);
 
         if (endReason.mayStartNext){
-            this.audioPlayer.startTrack(trackQueuer.removeNextTrackInQueue(), true);
+            audioPlayer.startTrack(trackQueuer.removeNextTrackInQueue(), true);
         }
 
         if (trackQueuer.getQueueSize() == 0){
-            PlayCommand playCommand = this.appContext.getBean(PlayCommand.class);
-            ServerVoiceChannel voiceChannel = playCommand.getVoiceChannel();
+            ServerVoiceChannel voiceChannel = connectionConfig.getVoiceChannel();
             this.channelDisconnection.startBotDisconnectTimer(voiceChannel);
+
+            AudioSystemMessenger audioSystemMessenger = this.appContext.getBean(AudioSystemMessenger.class);
+            if (audioSystemMessenger.getLastMessageWithComponents() != null){
+                //update components from the message to not include the play pause button.
+                audioSystemMessenger.getLastMessageWithComponents().createUpdater()
+                        .removeAllComponents().addComponents(PlayerControlsListener.audioPlayerActionRowWithoutPlayPause)
+                        .applyChanges().exceptionally(exception -> {
+                            this.logger.error("Unable to remove player controls from the last sent embed!");
+                            this.logger.error(exception.getMessage());
+                            return null;
+                        });
+            }
         }
     }
 

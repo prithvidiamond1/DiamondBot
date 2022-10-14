@@ -19,6 +19,7 @@ import org.javacord.api.entity.user.User;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.interaction.*;
+import org.prithvidiamond1.AudioPlayer.AudioPlayerConnectionConfig;
 import org.prithvidiamond1.AudioPlayer.AudioSystemMessenger;
 import org.prithvidiamond1.AudioPlayer.PlayerControlsListener;
 import org.prithvidiamond1.AudioPlayer.Sources.Youtube.YoutubeSourceEngine;
@@ -28,7 +29,6 @@ import org.prithvidiamond1.BotConstants;
 import org.prithvidiamond1.DB.Repositories.ServerRepository.ServerRepository;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -51,14 +51,15 @@ public class PlayCommand extends BaseCommand {
 
     private final ApplicationContext appContext;
 
-    private ServerVoiceChannel voiceChannel;
+    private final AudioPlayerConnectionConfig connectionConfig;
 
     private VoiceConnectionConstants.VoiceChannelConnectionStatus channelConnectionStatus = VoiceConnectionConstants.VoiceChannelConnectionStatus.ERROR_DURING_CONNECTION;
 
-    public PlayCommand(Logger logger, ServerRepository serverRepository, ApplicationContext appContext){
+    public PlayCommand(Logger logger, ServerRepository serverRepository, ApplicationContext appContext, AudioPlayerConnectionConfig connectionConfig){
         super(logger);
         this.serverRepository = serverRepository;
         this.appContext = appContext;
+        this.connectionConfig = connectionConfig;
 
         slashCommandOptions.add(SlashCommandOption.createWithChoices(
                 SlashCommandOptionType.STRING,
@@ -73,19 +74,6 @@ public class PlayCommand extends BaseCommand {
                 "String to be searched using the set audio source",
                 true
         ));
-    }
-
-    private void setVoiceChannel(ServerVoiceChannel voiceChannel){
-        this.voiceChannel = voiceChannel;
-    }
-
-    @Bean
-    public ServerVoiceChannel getVoiceChannel(){
-        if (this.voiceChannel != null){
-            return this.voiceChannel;
-        } else {
-            throw new NullPointerException("voiceChannel is currently null");
-        }
     }
 
     /**
@@ -152,18 +140,16 @@ public class PlayCommand extends BaseCommand {
     private EmbedBuilder commandFunction(User user, TextChannel textChannel, Server server, String sourceName, String searchString){
         DiscordApi api = appContext.getBean(DiscordApi.class);
         ServerVoiceChannel freeVoiceChannel = findVoiceChannel(api, user, server);
-        this.setVoiceChannel(freeVoiceChannel);
 
         AudioSystemMessenger audioSystemMessenger = appContext.getBean(AudioSystemMessenger.class);
         AudioPlayerManager playerManager = appContext.getBean(AudioPlayerManager.class);
         AudioSource audioSource = appContext.getBean(AudioSource.class);
         AudioLoadResultHandler audioLoadResultHandler = appContext.getBean(AudioLoadResultHandler.class);
-        AudioSourceManager sourceManager = null;
         String sourceLink = null;
 
          switch (sourceName.toLowerCase()) {
             case "youtube" -> {
-                sourceManager = appContext.getBean("youtubeAudioSourceManager", AudioSourceManager.class);
+                this.connectionConfig.setCurrentSourceManager(appContext.getBean("youtubeAudioSourceManager", AudioSourceManager.class));
                 YoutubeSourceEngine youtubeSourceEngine = appContext.getBean(YoutubeSourceEngine.class);
                 PlayerControlsListener controlsListener = appContext.getBean(PlayerControlsListener.class);
                 controlsListener.setCurrentAudioSourceEngine(youtubeSourceEngine);
@@ -171,9 +157,10 @@ public class PlayCommand extends BaseCommand {
             }
         }
 
-        playerManager.registerSourceManager(sourceManager);
+        playerManager.registerSourceManager(this.connectionConfig.getCurrentSourceManager());
 
         if (this.channelConnectionStatus.getConnectionStatus().equals(VoiceConnectionConstants.VoiceConnectionStatus.SUCCESSFUL)) {
+            this.connectionConfig.setVoiceChannel(freeVoiceChannel);  // Change current voice channel only if the connection is successful
             connectToSource(freeVoiceChannel, audioSource);
             playerManager.loadItem(sourceLink, audioLoadResultHandler);
         } else if (this.channelConnectionStatus.getConnectionStatus().equals(VoiceConnectionConstants.VoiceConnectionStatus.ALREADY_CONNECTED)){
@@ -184,8 +171,8 @@ public class PlayCommand extends BaseCommand {
             } else {
                 AudioItem newTrackItem = null;
 
-                if (sourceManager instanceof YoutubeAudioSourceManager) {
-                    YoutubeAudioSourceManager youtubeSourceManager = (YoutubeAudioSourceManager) sourceManager;
+                if (this.connectionConfig.getCurrentSourceManager() instanceof YoutubeAudioSourceManager) {
+                    YoutubeAudioSourceManager youtubeSourceManager = (YoutubeAudioSourceManager) this.connectionConfig.getCurrentSourceManager();
                     YoutubeSourceEngine youtubeSourceEngine = appContext.getBean(YoutubeSourceEngine.class);
                     newTrackItem = youtubeSourceManager.loadTrackWithVideoId(youtubeSourceEngine.fetchSourceId(searchString), false);
                 }
@@ -206,7 +193,7 @@ public class PlayCommand extends BaseCommand {
             }
         }
 
-        return audioSystemMessenger.joiningVoiceChannelMessage(this.channelConnectionStatus, freeVoiceChannel);
+        return audioSystemMessenger.joiningVoiceChannelMessage(this.channelConnectionStatus, this.connectionConfig.getVoiceChannel());
     }
 
     /**
@@ -232,7 +219,7 @@ public class PlayCommand extends BaseCommand {
      */
     @Override
     public void runCommand(MessageCreateEvent event) {
-        TextChannel textChannel = event.getChannel();
+        this.connectionConfig.setTextChannel(event.getChannel());
         String[] commandArgs = event.getMessage().getContent().split(" ");
         getLogger().info(String.format("No of elements in commandArgs: %d", commandArgs.length));
         getLogger().info(String.format("commandArgs: %s", Arrays.toString(commandArgs)));
@@ -245,7 +232,7 @@ public class PlayCommand extends BaseCommand {
                                 .setDescription("Please provide a non-empty search string to find a playable source")
                                 .setColor(BotConstants.botAccentColor)
                                 .setThumbnail(BotConstants.botIconURL))
-                        .send(textChannel)
+                        .send(this.connectionConfig.getTextChannel())
                         .exceptionally(exception -> {
                             getLogger().error("Unable to respond to the guild command!");
                             getLogger().error(exception.getMessage());
@@ -255,10 +242,10 @@ public class PlayCommand extends BaseCommand {
                 String source = commandArgs[1].toLowerCase();
                 String searchString = parseCommandArgs(commandArgs);
                 EmbedBuilder response = commandFunction(event.getMessageAuthor().asUser().orElse(null),
-                        textChannel, event.getServer().orElse(null),
+                        this.connectionConfig.getTextChannel(), event.getServer().orElse(null),
                         source, searchString);
                 new MessageBuilder().addEmbed(response)
-                        .send(textChannel)
+                        .send(this.connectionConfig.getTextChannel())
                         .exceptionally(exception -> {
                             getLogger().error("Unable to respond to the guild command!");
                             getLogger().error(exception.getMessage());
@@ -274,7 +261,7 @@ public class PlayCommand extends BaseCommand {
                                 .setDescription(String.format("To use the play command, type **%splay <source> \"<search string>\"**\nSupported sources currently include: **%s**", prefix, Arrays.toString(BotConstants.audioSources).replaceAll("[\\[\\]]", "")))
                                 .setColor(BotConstants.botAccentColor)
                                 .setThumbnail(BotConstants.botIconURL))
-                        .send(textChannel)
+                        .send(this.connectionConfig.getTextChannel())
                         .exceptionally(exception -> {
                             getLogger().error("Unable to respond to the guild command!");
                             getLogger().error(exception.getMessage());
@@ -288,7 +275,7 @@ public class PlayCommand extends BaseCommand {
                                     .setDescription(String.format("Currently the only sources supported are: **%s**", Arrays.toString(BotConstants.audioSources).replaceAll("[\\[\\]]", "")))
                                     .setColor(BotConstants.botAccentColor)
                                     .setThumbnail(BotConstants.botIconURL))
-                            .send(textChannel)
+                            .send(this.connectionConfig.getTextChannel())
                             .exceptionally(exception -> {
                                 getLogger().error("Unable to respond to the guild command!");
                                 getLogger().error(exception.getMessage());
@@ -301,7 +288,7 @@ public class PlayCommand extends BaseCommand {
                                     .setDescription("Along with the play command and it's other arguments, pass in a search string surrounded in double quotes as shown: **\"<search string>\"**")
                                     .setColor(BotConstants.botAccentColor)
                                     .setThumbnail(BotConstants.botIconURL))
-                            .send(textChannel)
+                            .send(this.connectionConfig.getTextChannel())
                             .exceptionally(exception -> {
                                 getLogger().error("Unable to respond to the guild command!");
                                 getLogger().error(exception.getMessage());
@@ -319,7 +306,7 @@ public class PlayCommand extends BaseCommand {
     @Override
     public void runCommand(SlashCommandCreateEvent event) {
         SlashCommandInteraction slashCommandInteraction = event.getSlashCommandInteraction();
-        TextChannel textChannel = slashCommandInteraction.getChannel().orElse(null);
+        connectionConfig.setTextChannel(slashCommandInteraction.getChannel().orElse(null));
         List<SlashCommandInteractionOption> commandArgs = slashCommandInteraction.getOptions();
         Optional<String> requestedAudioSource = commandArgs.get(0).getStringValue();
         if (requestedAudioSource.isPresent() && Arrays.asList(BotConstants.audioSources).contains(requestedAudioSource.get().toLowerCase())) {
@@ -329,7 +316,7 @@ public class PlayCommand extends BaseCommand {
                 String source = requestedAudioSource.get().toLowerCase();
                 String searchString = searchStringOptional.get();
                 EmbedBuilder response = commandFunction(slashCommandInteraction.getUser(),
-                        textChannel, slashCommandInteraction.getServer().orElse(null),
+                        this.connectionConfig.getTextChannel(), slashCommandInteraction.getServer().orElse(null),
                         source, searchString);
                 slashCommandInteraction.createImmediateResponder()
                         .addEmbed(response)
